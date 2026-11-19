@@ -12,6 +12,9 @@ __pycache__/
 .env
 .env.local
 
+# 本地环境配置（包含机器路径和敏感凭据，禁止提交）
+env.local.yaml
+
 # 临时文件
 *.tmp
 *.log
