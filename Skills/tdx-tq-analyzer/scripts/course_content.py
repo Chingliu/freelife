@@ -165,6 +165,19 @@ def _period_svg(rows, title):
     return _candle_svg(bars,dates,list(range(len(bars))),height=250)
 
 
+def _rsi_series(closes, period=14):
+    out=[]
+    for i in range(len(closes)):
+        if i < period:
+            out.append(50.0)
+            continue
+        changes=[closes[j]-closes[j-1] for j in range(i-period+1,i+1)]
+        gains=sum(max(v,0) for v in changes)/period
+        losses=sum(max(-v,0) for v in changes)/period
+        out.append(100.0 if losses == 0 else 100-100/(1+gains/losses))
+    return out
+
+
 def _macd_series(closes):
     def ema(vals,p):
         a=2/(p+1); out=[]
@@ -286,7 +299,7 @@ def build_course_html(chart, metrics):
       indicator_case,
       ["先确认指标参数与计算口径，避免不同软件参数不一致。","RSI高低只描述强弱，不意味着立即反转。","MACD观察DIF/DEA相对位置、零轴和柱体变化。","BOLL看价格相对通道的位置；ATR只衡量波动，不判断方向。"],
       "指标由历史数据计算，存在滞后；多个同源指标同时发出信号，不代表证据完全独立。",
-      "ATR(14)主要回答什么问题？","B","ATR衡量近期真实波幅/波动程度，不提供上涨或下跌方向。", _line_svg(ind["rsi14_series"], dates, "RSI(14)指标走势") if "rsi14_series" in ind else _line_svg([ind["rsi14"]]*len(dates), dates, "RSI(14)当前值") + _line_svg(_macd_series(closes)[0], dates, "MACD DIF走势", zero=True) + _line_svg(_macd_series(closes)[2], dates, "MACD柱体", color="#d97706", zero=True)))
+      "ATR(14)主要回答什么问题？","B","ATR衡量近期真实波幅/波动程度，不提供上涨或下跌方向。", _line_svg(ind["rsi14_series"], dates, "RSI(14)指标走势") if "rsi14_series" in ind else _line_svg(_rsi_series(closes), dates, "RSI(14)走势") + _line_svg(_macd_series(closes)[0], dates, "MACD DIF走势", zero=True) + _line_svg(_macd_series(closes)[2], dates, "MACD柱体", color="#d97706", zero=True)))
     sections.append(_section(6,"量价关系综合应用","把趋势、周期、K线、成交量和指标组成可复核、可证伪的研究判断。",
       "综合分析不是把指标投票相加，而是先确定周期背景，再陈述价格事实、量能事实和指标状态，最后列出支持证据、反例与失效条件。",
       "分析顺序：周期背景 → 趋势结构 → 关键价位 → 量价确认 → 指标辅助 → 触发/失效条件。",
