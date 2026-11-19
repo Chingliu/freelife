@@ -1,0 +1,119 @@
+{
+  "as_of": "2026-08-05",
+  "kept": 91,
+  "rej": {
+    "low_turnover": 2
+  },
+  "rows": [
+    {
+      "rank": 1,
+      "code": "sz000651",
+      "name": "sz000651",
+      "composite": 76.1,
+      "sector": "unknown",
+      "trend": 76.7,
+      "quality": null,
+      "flow": 58.9
+    },
+    {
+      "rank": 2,
+      "code": "sh601166",
+      "name": "兴业银行",
+      "composite": 74.0,
+      "sector": "金融",
+      "trend": 78.3,
+      "quality": null,
+      "flow": 56.7
+    },
+    {
+      "rank": 3,
+      "code": "sh600690",
+      "name": "sh600690",
+      "composite": 73.7,
+      "sector": "unknown",
+      "trend": 83.9,
+      "quality": null,
+      "flow": 31.1
+    },
+    {
+      "rank": 4,
+      "code": "sh601398",
+      "name": "sh601398",
+      "composite": 73.2,
+      "sector": "金融",
+      "trend": 67.8,
+      "quality": null,
+      "flow": 75.6
+    },
+    {
+      "rank": 5,
+      "code": "sz000001",
+      "name": "平安银行",
+      "composite": 72.9,
+      "sector": "金融",
+      "trend": 82.2,
+      "quality": null,
+      "flow": 38.9
+    },
+    {
+      "rank": 6,
+      "code": "sh600900",
+      "name": "长江电力",
+      "composite": 71.5,
+      "sector": "公用",
+      "trend": 71.1,
+      "quality": null,
+      "flow": 81.1
+    },
+    {
+      "rank": 7,
+      "code": "sz000333",
+      "name": "美的集团",
+      "composite": 71.5,
+      "sector": "制造",
+      "trend": 86.1,
+      "quality": 64.28571428571428,
+      "flow": 71.1
+    },
+    {
+      "rank": 8,
+      "code": "sh600519",
+      "name": "贵州茅台",
+      "composite": 70.3,
+      "sector": "消费",
+      "trend": 87.2,
+      "quality": 85.71428571428572,
+      "flow": 96.3
+    },
+    {
+      "rank": 9,
+      "code": "sh601766",
+      "name": "sh601766",
+      "composite": 66.9,
+      "sector": "unknown",
+      "trend": 88.9,
+      "quality": null,
+      "flow": 35.6
+    },
+    {
+      "rank": 10,
+      "code": "sz002415",
+      "name": "海康威视",
+      "composite": 65.4,
+      "sector": "科技",
+      "trend": 96.7,
+      "quality": null,
+      "flow": 78.9
+    }
+  ],
+  "reasons": [
+    "60日最大回撤横截面分 98.9/100（原始值 -0.08883）",
+    "20日实现波动率横截面分 95.6/100（原始值 0.1994）",
+    "均线排列+ADX横截面分 93.3/100（原始值 2.653）；MA20=40.32, MA60=39.05, MA120=38.57, ADX=32.6",
+    "60日动量横截面分 71.1/100（原始值 -0.001735）",
+    "相对沪深300超额60日横截面分 70.0/100（原始值 0.04844）"
+  ],
+  "grade": "C",
+  "entry": "观察区：回踩 MA20(40.32) 附近且综合分仍居前",
+  "stop": "条件止损：收盘跌破 MA60(39.05) 或跌破近60日低点(36.27)"
+}

@@ -1,0 +1,13 @@
+{
+  "items": {
+    "sh600519": {"net_inflow_5d": 1.2e8, "northbound_days": 5},
+    "sz300750": {"net_inflow_5d": 8.0e7, "northbound_days": 3},
+    "sz000858": {"net_inflow_5d": 4.5e7, "northbound_days": 4},
+    "sh600036": {"net_inflow_5d": -2.0e7, "northbound_days": 0}
+  },
+  "macro": {
+    "regime_hint": "sideways",
+    "scale": 0.95,
+    "note": "seed macro scale for Phase4 gate"
+  }
+}

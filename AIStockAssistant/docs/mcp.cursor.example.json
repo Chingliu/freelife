@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ai-stock-assistant": {
+      "command": "D:\\freelife\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "app.mcp.server"],
+      "cwd": "D:\\freelife\\AIStockAssistant",
+      "env": {
+        "PYTHONPATH": "D:\\freelife\\AIStockAssistant"
+      }
+    }
+  }
+}

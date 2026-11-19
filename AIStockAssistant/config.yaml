@@ -1,0 +1,31 @@
+data:
+  provider: tdx_local
+  # MCP 启动时若本地 as_of 过期：优先 pytdx 增量，失败再试官网 zip
+  auto_download_on_start: true
+  pytdx_workers: 4
+  pytdx_bar_count: 40
+  # MCP 启动时同步宽基 ETF 分钟线到 vipdoc（pytdx，失败不阻断启动）
+  auto_sync_minute_on_start: true
+  minute_sync_freqs: ["1m", "5m"]
+  minute_sync_bar_count: 800
+  # 留空则用内置宽基列表（含 sh510210）；也可自行覆盖
+  # minute_sync_codes: ["sh510050", "sh510300", "sh510210"]
+  # 日线真正刷新成功后，顺带更新 finance_cache（与 K 线同节奏；默认开）
+  sync_finance_with_day: true
+  # 日线已新鲜、未刷新时，是否仍在 MCP 启动时单独拉财务（默认关）
+  auto_sync_finance_on_start: false
+  finance_sync_workers: 4
+  # 欧美亚太指数/大公司（yfinance），挂在同一 MCP
+  global_enabled: true
+  sqlite_path: data/cache.db
+  tdx:
+    root: "D:\\tdx"
+    vipdoc: "D:\\tdx\\vipdoc"
+    exe: "D:\\tdx\\TdxW.exe"
+targets:
+  annual_return_min: 0.05
+  annual_return_max: 0.10
+  max_drawdown: 0.15
+  max_position_pct: 0.20
+  max_total_exposure: 0.80
+log_level: INFO

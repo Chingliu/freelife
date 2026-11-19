@@ -1,0 +1,17 @@
+# 环境缓存
+_env_cache/
+
+# 输出目录
+out/
+out_510330/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.local
+
+# 临时文件
+*.tmp
+*.log

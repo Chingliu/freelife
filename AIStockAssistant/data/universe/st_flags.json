@@ -1,0 +1,4 @@
+{
+  "flags": {},
+  "_comment": "Optional ST flags: {\"sh600xxx\": true}. Empty = L2 ST filter skipped."
+}

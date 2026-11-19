@@ -1,0 +1,4 @@
+{
+  "flags": {},
+  "_comment": "Optional suspend flags: {\"sh600xxx\": true}. Empty = L2 suspend filter skipped."
+}
