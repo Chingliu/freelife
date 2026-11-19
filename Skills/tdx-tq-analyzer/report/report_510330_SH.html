@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>510330.SH 沪深300ETF华夏 · 量能与资金流分析</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6f8;color:#1f2329;line-height:1.6;padding:28px 16px}
+.wrap{max-width:1180px;margin:0 auto}
+.header{border-bottom:2px solid #d93025;padding-bottom:16px;margin-bottom:24px}
+.header h1{font-size:24px;font-weight:600}
+.header .sub{color:#6b7280;font-size:13px;margin-top:6px}
+.tag{display:inline-block;background:#fdecea;color:#c5221f;padding:2px 9px;border-radius:4px;font-size:12px;margin-left:8px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px 22px;margin-bottom:18px}
+.card h2{font-size:17px;font-weight:600;margin-bottom:14px;border-left:4px solid #d93025;padding-left:10px}
+.tldr{background:#fffbf0;border:1px solid #fcd9a8}
+.tldr ul{margin-left:20px}.tldr li{margin-bottom:8px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:4px}
+.kpi{background:#fafafa;border:1px solid #eee;border-radius:8px;padding:13px}
+.kpi .l{font-size:12px;color:#6b7280}.kpi .v{font-size:21px;font-weight:600;margin-top:3px}
+.red{color:#d93025}.green{color:#0f9d58}.gray{color:#6b7280}
+.chart{width:100%;height:380px}.chart-sm{width:100%;height:300px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+th,td{padding:7px 8px;border-bottom:1px solid #eef0f2;text-align:right}
+th{background:#f8f9fa;color:#4b5563;font-weight:500}
+th:first-child,td:first-child{text-align:left}
+.note{font-size:12px;color:#6b7280;margin-top:10px;line-height:1.7}
+.disclaimer{background:#f3f4f6;border-radius:8px;padding:14px 16px;font-size:12px;color:#4b5563;margin-top:20px}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tab{padding:5px 14px;border:1px solid #d1d5db;border-radius:6px;background:#fff;cursor:pointer;font-size:13px}
+.tab.on{background:#d93025;color:#fff;border-color:#d93025}
+.hidden{display:none}
+.veto{background:#fdecea;color:#c5221f;border:1px solid #f5c6c6;border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+.pass{background:#e6f4ea;color:#137333;border:1px solid #b7e1c1;border-radius:8px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+.st{display:inline-block;padding:1px 7px;border-radius:4px;font-size:11px;font-weight:500}
+.st-ok{background:#e6f4ea;color:#137333}.st-no{background:#fdecea;color:#c5221f}
+.st-mid{background:#fef7e0;color:#a15c00}.st-na{background:#f3f4f6;color:#6b7280}
+.na{color:#6b7280;font-style:italic}
+.explain{background:#f0f6ff;border:1px solid #c3d5f5;border-radius:8px;padding:16px 18px;margin-top:14px}
+.explain h3{font-size:14px;font-weight:600;color:#1a3a6b;margin-bottom:10px}
+.explain p{font-size:13px;color:#2d3a4a;margin-bottom:8px;line-height:1.8}
+.explain .formula{background:#fff;border:1px solid #d0dff5;border-radius:6px;padding:8px 12px;font-family:monospace;font-size:13px;color:#1a3a6b;margin:8px 0}
+.explain .result{font-weight:600;color:#c5221f}
+.bc-intro{background:#f8f9fa;border:1px solid #e5e7eb;border-radius:8px;padding:16px 18px;margin-bottom:14px}
+.bc-intro h3{font-size:14px;font-weight:600;color:#374151;margin-bottom:10px}
+.bc-intro ol{font-size:13px;color:#374151;padding-left:20px;line-height:1.9}
+.bc-intro ol li{margin-bottom:4px}
+.bc-intro .formula{background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:6px 12px;font-family:monospace;font-size:12px;color:#1f2329;margin:6px 0}
+.course-chapter{border-top:1px solid #e5e7eb;padding:20px 0}.course-chapter h3{font-size:17px;margin-bottom:8px;color:#24344d}
+.course-chapter h4{font-size:14px;margin:12px 0 6px}.course-chapter p,.course-chapter li{font-size:13px;line-height:1.85}
+.course-goal{color:#475467;margin-bottom:10px}.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.course-grid>div{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:13px}
+.course-formula{background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:9px;margin-top:8px;font:12px/1.7 monospace;overflow-wrap:anywhere}
+.course-chapter ol{padding-left:22px}.course-chapter li{margin:4px 0}.course-caution{background:#fff8e8;border-left:3px solid #d99b2b;padding:9px 12px;margin-top:10px}
+.course-quiz{background:#f0f6ff;border:1px solid #c3d5f5;border-radius:8px;padding:12px;margin-top:12px;font-size:13px}
+.quiz-options{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}.quiz-options button{border:1px solid #9db6dc;background:white;border-radius:6px;padding:6px 10px;cursor:pointer}
+.quiz-answer{color:#2459a6;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="header">
+<h1>510330.SH 沪深300ETF华夏 · 量能与资金流分析 <span class="tag">盘中快照</span></h1>
+<div class="sub">数据来源：通达信金融终端官方 TQ 接口（tqcenter）｜快照时点：2026-11-19 ｜标的：沪深300ETF华夏（510330.SH）</div>
+</div>
+
+<div class="card tldr">
+<h2>核心结论</h2>
+<ul><li><b>量能水位：</b>当日成交 24.58 亿股（前一日 8.94 亿股），量比（对 5 日均量）<b>2.39</b>、对 20 日均量 <b>4.17</b>；60 日中位量 1.19 亿股。当日显著放量。</li><li><b>近期峰量：</b>2026-11-19 成交 <b>24.58 亿股</b>，当日实体涨跌 +0.38%。放量方向需结合价格位置判断，宽基 ETF 的巨量常对应申赎/调样，未必等同方向性下注。</li><li><b>资金流：</b>盘口外盘占比 <b>67.0%</b>，净主动买入约 <b>35.31 亿元</b>（净流入）；20 日 CMF = <b>+0.410</b>，中期资金亦为净流入，方向一致。</li><li><b>价格背景：</b>近 5 日 -1.35%｜近 20 日 -1.26%｜近 60 日 -12.67%｜年初至今 -12.22%。现价 4.234，IOPV 4.234（溢价 +0.00%）。</li></ul>
+</div>
+
+<div class="card">
+<h2>实时快照关键指标</h2>
+<div class="grid"><div class="kpi"><div class="l">最新价</div><div class="v red">4.234</div></div><div class="kpi"><div class="l">涨跌幅</div><div class="v red">+0.09%</div></div><div class="kpi"><div class="l">成交额</div><div class="v ">104.12 亿</div></div><div class="kpi"><div class="l">成交量</div><div class="v ">2457.7 万手</div></div><div class="kpi"><div class="l">换手率</div><div class="v ">14.73%</div></div><div class="kpi"><div class="l">规模</div><div class="v ">706.38 亿</div></div></div>
+<div class="note">现价 4.234｜昨收 4.230｜今开 4.218｜最高 4.249｜最低 4.183｜均价 4.236｜IOPV 4.234｜委比 -92.50。数据来源：通达信 TQ 快照，20261119。</div>
+</div>
+
+<div class="card">
+<h2>价格与成交量（近 60 交易日）</h2>
+<div class="tabs"><div class="tab on" onclick="sw('k',this)">图</div><div class="tab" onclick="sw('kt',this)">表</div></div>
+<div id="k"><div id="chart1" class="chart"></div></div>
+<div id="kt" class="hidden"><table><thead><tr><th>日期</th><th>收盘</th><th>成交量(亿股)</th></tr></thead><tbody><tr><td>08-12</td><td class='red'>4.952</td></tr><tr><td>08-13</td><td class='green'>4.927</td></tr><tr><td>08-14</td><td class='green'>4.926</td></tr><tr><td>08-17</td><td class='red'>5.004</td></tr><tr><td>08-18</td><td class='green'>4.991</td></tr><tr><td>08-19</td><td class='green'>4.848</td></tr><tr><td>08-20</td><td class='green'>4.850</td></tr><tr><td>08-21</td><td class='red'>4.881</td></tr><tr><td>08-24</td><td class='green'>4.824</td></tr><tr><td>08-25</td><td class='red'>4.813</td></tr><tr><td>08-26</td><td class='red'>4.853</td></tr><tr><td>08-27</td><td class='red'>4.895</td></tr><tr><td>08-28</td><td class='green'>4.879</td></tr><tr><td>08-31</td><td class='red'>4.884</td></tr><tr><td>09-01</td><td class='red'>4.879</td></tr><tr><td>09-02</td><td class='green'>4.817</td></tr><tr><td>09-03</td><td class='green'>4.819</td></tr><tr><td>09-04</td><td class='green'>4.812</td></tr><tr><td>09-07</td><td class='red'>4.837</td></tr><tr><td>09-08</td><td class='green'>4.823</td></tr><tr><td>09-09</td><td class='red'>4.837</td></tr><tr><td>09-10</td><td class='red'>4.816</td></tr><tr><td>09-11</td><td class='green'>4.772</td></tr><tr><td>09-14</td><td class='red'>4.746</td></tr><tr><td>09-15</td><td class='green'>4.712</td></tr><tr><td>09-24</td><td class='green'>4.711</td></tr><tr><td>09-28</td><td class='green'>4.600</td></tr><tr><td>09-29</td><td class='red'>4.608</td></tr><tr><td>09-30</td><td class='red'>4.621</td></tr><tr><td>10-08</td><td class='green'>4.570</td></tr><tr><td>10-09</td><td class='red'>4.575</td></tr><tr><td>10-12</td><td class='green'>4.547</td></tr><tr><td>10-13</td><td class='red'>4.539</td></tr><tr><td>10-14</td><td class='green'>4.476</td></tr><tr><td>10-15</td><td class='red'>4.427</td></tr><tr><td>10-16</td><td class='green'>4.430</td></tr><tr><td>10-19</td><td class='red'>4.431</td></tr><tr><td>10-20</td><td class='green'>4.404</td></tr><tr><td>10-21</td><td class='green'>4.360</td></tr><tr><td>10-22</td><td class='green'>4.288</td></tr><tr><td>10-23</td><td class='red'>4.353</td></tr><tr><td>10-26</td><td class='red'>4.356</td></tr><tr><td>10-27</td><td class='green'>4.301</td></tr><tr><td>10-28</td><td class='green'>4.331</td></tr><tr><td>10-29</td><td class='green'>4.288</td></tr><tr><td>10-30</td><td class='red'>4.238</td></tr><tr><td>11-02</td><td class='red'>4.259</td></tr><tr><td>11-03</td><td class='red'>4.272</td></tr><tr><td>11-04</td><td class='red'>4.354</td></tr><tr><td>11-05</td><td class='red'>4.364</td></tr><tr><td>11-06</td><td class='green'>4.305</td></tr><tr><td>11-09</td><td class='green'>4.308</td></tr><tr><td>11-10</td><td class='green'>4.312</td></tr><tr><td>11-11</td><td class='red'>4.329</td></tr><tr><td>11-12</td><td class='green'>4.292</td></tr><tr><td>11-13</td><td class='green'>4.258</td></tr><tr><td>11-16</td><td class='green'>4.227</td></tr><tr><td>11-17</td><td class='red'>4.221</td></tr><tr><td>11-18</td><td class='red'>4.230</td></tr><tr><td>11-19</td><td class='red'>4.234</td></tr></tbody></table></div>
+<div class="note">红涨绿跌（A 股习惯）｜成交量单位：亿股｜数据来源：通达信 TQ 日 K 线，截至 2026-11-19。</div>
+</div>
+
+<div class="card">
+<h2>量能结构分析</h2>
+<div id="chart2" class="chart-sm"></div>
+<div class="note">近 20 个完整交易日：上涨日均量 <b>6.19 亿股</b>，下跌日均量 <b>3.17 亿股</b>，比值 <b>1.95</b>（>1 表示量能偏多）。60 日量能中位数 1.19 亿股。<br>对于宽基 ETF，巨额成交常含一级申赎与做市商对冲，单看放量判断方向容易误读，需结合 IOPV 溢价率与份额变化验证。</div>
+<div class="explain">
+<h3>📖 量能 & 量比是什么？怎么算出来的？</h3>
+<p><b>成交量</b>：某一天成交的股票数量（单位：股/万手）。成交量越大，代表当天市场参与越活跃，价格变动的"底气"越足。</p>
+<p><b>量比（Volume Ratio）</b>：今天的成交量 ÷ 最近 N 天的平均成交量，用来判断今天比平时放大还是缩小了几倍。</p>
+<div class="formula">量比(5日) = 今日成交量 ÷ 前5日平均成交量<br>量比(20日) = 今日成交量 ÷ 前20日平均成交量</div>
+<p><b>代入本次数据（510330 沪深300ETF，2026-11-19）：</b></p>
+<p>· 今日成交 <b>24.58 亿股</b>（前一日 8.94 亿股）<br>
+· 前5日均量 10.28 亿股 → 量比(5日) = <b>2.39</b>（>1.5 为明显放量，<0.7 为缩量）<br>
+· 前20日均量 5.90 亿股 → 量比(20日) = <b>4.17</b><br>
+· 60日中位量 1.19 亿股，今日量是60日中位量的约 <b>20.7</b> 倍</p>
+<p><b>上涨/下跌日均量比</b>：近20个完整交易日中，上涨日的平均成交量 ÷ 下跌日的平均成交量。比值 >1 说明涨的时候量比跌的时候大，量能结构偏多；<1 则偏空。</p>
+<div class="formula">上涨日均量 6.19 亿 ÷ 下跌日均量 3.17 亿 = <b>1.95</b></div>
+<p class="note" style="margin-top:8px">⚠️ 盘中数据：今日成交量尚未收盘定局，量比在收盘后会进一步变化。宽基 ETF 的巨量常含一级申赎与做市商对冲，不等于方向性下注。</p>
+</div>
+</div>
+
+<div class="card">
+<h2>资金流入流出</h2>
+<div id="chart3" class="chart-sm"></div>
+<div class="note">盘口主动买卖：外盘（主动买入）1645.62 万手，内盘（主动卖出）812.12 万手，主动买入占比 <b>67.0%</b>。<br>20 日 CMF（蔡金资金流）= <b>+0.410</b>；正值表示中期资金净流入，负值表示净流出。<br><b>口径提示：</b>内/外盘与 CMF 均为基于成交数据的统计推断，不等同于真实主力账户进出；ETF 申赎数据需基金公司公告确认，本报告未包含。</div>
+<div class="explain">
+<h3>📖 内/外盘 & CMF 是什么？怎么算出来的？</h3>
+<p><b>内盘 / 外盘</b>：交易所每笔成交都以买价或卖价撮合。以卖价成交（主动买入）计为<b>外盘</b>；以买价成交（主动卖出）计为<b>内盘</b>。外盘占比 >55% 说明主动买盘占优，<45% 则主动卖盘占优。</p>
+<div class="formula">外盘占比 = 外盘成交量 ÷ (外盘 + 内盘) × 100%<br>= 1645.62 万手 ÷ (1645.62 + 812.12) 万手 = <b>67.0%</b></div>
+<p><b>净主动买入估算</b>：（外盘 − 内盘）÷ 总成交量 × 今日成交额，是统计推断值，非实际机构资金流。</p>
+<div class="formula">净主动买入 = (+8,335,006 − 8,121,214) ÷ 24,577,434 × 104.12 亿 ≈ <b>35.31 亿元</b></div>
+<p><b>CMF（Chaikin Money Flow，蔡金资金流）</b>：衡量近20日资金流入强度的综合指标。它把每天的量价关系压缩成一个"有向成交量"，再求20日累积。</p>
+<div class="formula">单日 MFV = [(收盘价 − 最低价) − (最高价 − 收盘价)] ÷ (最高价 − 最低价) × 当日成交量<br>
+CMF(20日) = 近20日 MFV 之和 ÷ 近20日成交量之和<br>
+= 48.4410 ÷ 118.0188 = <b>+0.410</b></div>
+<p>· MFV > 0：收盘靠近最高价，资金主动买入；MFV < 0：收盘靠近最低价，资金主动卖出。<br>
+· CMF > +0.05：中期净流入；CMF < −0.05：中期净流出；之间为中性。<br>
+· <b>本次结果：CMF = <span class="result">+0.410</span>，属于<span class="result">中期净流入</span>。</b></p>
+<p class="note" style="margin-top:8px">⚠️ 内/外盘与 CMF 均为基于成交数据的统计推断，不等同于真实主力账户进出。ETF 申赎数据需基金公司公告确认，本报告未包含。</p>
+</div>
+</div>
+
+<div class="card">
+<h2>买入依据核对（研究观察，非买入建议）</h2>
+<div class="bc-intro">
+<h3>📖 这份推导是怎么做出来的？</h3>
+<ol>
+<li><b>第一步：硬否决检查</b>——先查有没有必须先排除的情况。本次共检查 3 项：① 趋势与中期资金是否同时转空（价格同时跌破 MA20/MA60 且 CMF &lt; −0.05）；② 价格是否贴近压力位且量能不支持；③ 数据是否够 60 根 K 线。有任意一项触发则直接判定"不成立"，不再看后续。本次触发 <b>0</b> 项。</li>
+<li><b>第二步：四维度打分</b>——逐项检查是否有数据支撑，不做多数票表决。
+  <br>· <b>趋势位置</b>：现价 vs MA5/MA20/MA60。价格在均线之上 = 支持；之下 = 不支持。
+  <br>· <b>量能确认</b>：量比(20日) ≥ 0.8 且 上涨/下跌日均量比 > 1.1 → 支持；量比 > 1.5 且价格在 MA20 下方（放量滞涨）→ 不支持。
+  <br>· <b>资金确认</b>：CMF20 > +0.05 且外盘占比 > 50% → 支持；CMF20 < −0.05 → 不支持。
+  <br>· <b>位置与风险回报</b>：支撑位到现价的距离 ÷ 现价到压力位的距离 = R:R（风险回报比）。≥ 1.5 = 合理；&lt; 1 = 偏贵。
+</li>
+<li><b>第三步：综合定档</b>——无否决且三个维度均支持 + R:R ≥ 1.5 → "关注"；无否决且两个维度支持 → "试探"；否则 → "观望"。本次档位：<b>试探（仅研究观察）</b>。</li>
+<li><b>第四步：证据等级</b>——数据源单一（通达信 TQ），无样本外回测与跨标的验证，故上限为 <b>C 级</b>（有否决时降为 D）。</li>
+<li><b>第五步：触发/止损/观察点</b>——所有价格均取自实际 K 线，不预测目标价。触发 = 什么条件满足时这套逻辑开始生效；止损 = 什么条件满足时逻辑失效；观察点 = 需要持续跟踪的指标。</li>
+</ol>
+</div>
+<div class="grid" style="margin-bottom:14px">
+<div class="kpi"><div class="l">核对档位</div><div class="v">试探（仅研究观察）</div></div>
+<div class="kpi"><div class="l">证据等级</div><div class="v">C</div></div>
+<div class="kpi"><div class="l">硬否决项</div><div class="v">0</div></div>
+</div>
+<div class="pass"><b>未触发硬否决</b>：趋势/资金未同时转空，量价无放量滞涨否决项。仍受证据等级上限约束，档位见上。</div>
+<table>
+<thead><tr><th style="width:16%">维度</th><th style="width:12%">结论</th><th>依据（均来自 TQ 数据或明确标注未评估）</th></tr></thead>
+<tbody><tr><td>趋势位置</td><td><span class='st st-no'>不支持</span></td><td style='text-align:left'>现价 4.234 vs MA5 4.234 / MA20 4.292 / MA60 4.580</td></tr><tr><td>量能确认</td><td><span class='st st-ok'>支持</span></td><td style='text-align:left'>量比(20日) 4.17，上涨/下跌日均量比 1.95</td></tr><tr><td>资金确认</td><td><span class='st st-ok'>支持</span></td><td style='text-align:left'>CMF20 +0.410，外盘占比 67.0%</td></tr><tr><td>位置与风险回报</td><td><span class='st st-mid'>合理</span></td><td style='text-align:left'>支撑 4.183，压力 4.397，上行 3.8% / 下行 1.2%，粗估 R:R≈3.20（以近 20 日高低点为代理，非精确目标）</td></tr><tr><td>消息面</td><td><span class='st st-na'>未评估</span></td><td style='text-align:left'>TQ 接口不提供新闻/公告检索；不得声称无利空</td></tr><tr><td>筹码结构</td><td><span class='st st-na'>未评估</span></td><td style='text-align:left'>TQ 无筹码分布字段；宽基 ETF 通常亦无个股筹码概念，不编造</td></tr></tbody>
+</table>
+<div class="note">数据源单一（通达信 TQ），本技能不做样本外回测与跨标的验证；仅描述性量价统计，故证据等级上限为 C。</div>
+<h3 style="font-size:14px;font-weight:600;margin:18px 0 8px;color:#374151">触发 / 止损 / 观察点（三元组）</h3>
+<table>
+<tbody>
+<tr><th style="width:16%">触发条件</th><td style="text-align:left">收盘价重新站上 MA20（4.292）且 CMF20 转正；或回踩支撑 4.183 附近（误差 ±1%）且量比回落至 0.8 以下企稳。</td></tr>
+<tr><th>止损 / 失效</th><td style="text-align:left">收盘跌破 4.183 且 CMF20 < -0.1 → 依据失效；纯价格止损参考 4.099（支撑下方 2%）。</td></tr>
+<tr><th>观察点</th><td style="text-align:left">• 外盘占比是否持续 > 50%（当前 67.0%）<br>• CMF20 能否维持在 0.05 以上（当前 +0.410）<br>• 量比（对 20 日均量）是否从 4.17 回到 0.8–1.5 常态区间<br>• 消息面与份额变动（TQ 不提供，需外部数据源）</td></tr>
+</tbody>
+</table>
+<div class="note"><b>边界：</b>研究观察口径，非买入建议、非自动交易指令。 本报告不含样本外回测、跨标的验证与消息面检索，不得据此直接下单。</div>
+</div>
+
+<div class="card"><h2>六章技术分析实战课程</h2><p class="note">以下课程以本次 TQ 实际日线数据为案例；所有日期、价格、成交量和指标均由原始K线计算。周K/月K由日线聚合，样本不足处会明确说明。</p><p class="course-caution"><b>数据时点：</b>如果本次采集发生在交易时段，最新日K/当周K/当月K尚未完成；盘中形态不能当作收盘确认。若在收盘后采集，则以TQ返回的最新完整日线为准。 本次原始日线共 105 根，覆盖 2026-05-27 至 2026-11-19。</p>
+
+<section class="course-chapter">
+ <h3>第1章　K线基础</h3>
+ <p class="course-goal"><b>本章目标：</b>能从开、高、低、收四价读出实体、影线和当日价格行为。</p>
+ <div class="course-grid">
+  <div><h4>一、原理与概念</h4><p>一根K线记录一个时间周期内的四个价格。实体表示开盘与收盘之间的距离；上影线表示最高价到实体上沿，下影线表示实体下沿到最低价。先读事实，再解释多空。</p><div class="course-formula">实体长度=|收盘价−开盘价|；上影=最高价−max(开盘价,收盘价)；下影=min(开盘价,收盘价)−最低价。</div></div>
+  <div><h4>二、510330真实行情案例</h4><p>2026-11-19：开盘 4.218、收盘 4.234、最高 4.249、最低 4.183，为阳线；实体 0.016（约占开盘价 0.38%），上影 0.015、下影 0.035。</p></div>
+ </div>
+ <h4>三、跟着数据做分析</h4><ol><li>先确认本报告周期是日K，不把盘中快照误当成完整收盘K线。</li><li>比较开盘与收盘，判断阳线、阴线或平盘。</li><li>比较实体与上下影线，描述冲高回落或探低回升的痕迹。</li><li>把这根K线放回前后交易日，不凭单根形态预测反转。</li></ol>
+ <p class="course-caution"><b>容易误判：</b>长下影只说明该周期内价格曾下探后收回；没有趋势位置和后续确认，不能直接称为买点。</p>
+ <div class="course-quiz"><b>四、本章练习：</b>实体由哪两个价格决定？
+  <div class="quiz-options"><button type="button" data-correct="A" data-explain="开盘价与收盘价决定实体；最高价和最低价决定影线范围。">查看答案与解析</button><span class="quiz-answer"></span></div>
+ </div>
+</section>
+
+<section class="course-chapter">
+ <h3>第2章　成交量</h3>
+ <p class="course-goal"><b>本章目标：</b>理解成交股数、均量与量比，辨别相对放量和缩量。</p>
+ <div class="course-grid">
+  <div><h4>一、原理与概念</h4><p>成交量是一定周期内成交的证券数量；成交额是成交金额。放量/缩量必须相对一个明确基准来定义，均量线可平滑短期噪声。</p><div class="course-formula">N日均量=最近N日成交量之和÷N；量比(N)=当日成交量÷前N日平均成交量（此处教学口径使用滚动均量）。</div></div>
+  <div><h4>二、510330真实行情案例</h4><p>2026-11-19 成交 24.577 亿股；近5日均量 10.282 亿股，量比(5日) 2.39；近20日均量 5.901 亿股，量比(20日) 4.16。</p></div>
+ </div>
+ <h4>三、跟着数据做分析</h4><ol><li>先看量柱绝对值，再与5日、20日均量比较。</li><li>量比大于1表示高于所选均量基准，小于1表示低于基准。</li><li>把量能与同日K线方向一起读：放量上涨、放量下跌、缩量上涨各有不同含义。</li><li>宽基ETF还要考虑申赎、做市和指数调整等成交来源。</li></ol>
+ <p class="course-caution"><b>容易误判：</b>量比不是资金净流入指标；成交量放大也不等于机构看多。</p>
+ <div class="course-quiz"><b>四、本章练习：</b>若当日成交量是20日均量的0.7倍，最准确的描述是什么？
+  <div class="quiz-options"><button type="button" data-correct="B" data-explain="当日成交量低于20日均量，属于相对缩量；不能单凭这一点判断涨跌方向。">查看答案与解析</button><span class="quiz-answer"></span></div>
+ </div>
+</section>
+
+<section class="course-chapter">
+ <h3>第3章　趋势分析</h3>
+ <p class="course-goal"><b>本章目标：</b>用高低点结构和均线判断趋势背景，并写出假设失效条件。</p>
+ <div class="course-grid">
+  <div><h4>一、原理与概念</h4><p>上升结构通常表现为高点、低点逐步抬高；下降结构则表现为高点、低点逐步降低。移动平均线是过去收盘价的平滑值，具有滞后性。</p><div class="course-formula">MA(N)=最近N个交易日收盘价之和÷N。均线描述过去，不预测未来。</div></div>
+  <div><h4>二、510330真实行情案例</h4><p>最新收盘 4.234；MA5=4.234、MA20=4.292、MA60=4.580。按收盘与短中期均线的相对位置，当前属于“收盘处于MA5与MA20之间”。</p></div>
+ </div>
+ <h4>三、跟着数据做分析</h4><ol><li>先观察近阶段高点和低点是否逐步抬高或降低。</li><li>再比较收盘价与MA5、MA20、MA60的位置。</li><li>均线多头/空头排列只能作为辅助证据，要与价格结构交叉验证。</li><li>写明趋势判断失效条件，例如有效跌破最近一个结构低点。</li></ol>
+ <p class="course-caution"><b>容易误判：</b>均线交叉是滞后信号；横盘时频繁交叉容易产生假信号。</p>
+ <div class="course-quiz"><b>四、本章练习：</b>MA20的本质是什么？
+  <div class="quiz-options"><button type="button" data-correct="C" data-explain="MA20是最近20个交易日收盘价的算术平均，反映过去一段价格的平滑水平。">查看答案与解析</button><span class="quiz-answer"></span></div>
+ </div>
+</section>
+
+<section class="course-chapter">
+ <h3>第4章　日K/周K/月K多周期分析</h3>
+ <p class="course-goal"><b>本章目标：</b>学会用月线看大背景、周线看中期结构、日线看执行细节。</p>
+ <div class="course-grid">
+  <div><h4>一、原理与概念</h4><p>周K/月K不是另一套独立行情，而是由日K聚合：开盘取周期首日开盘，收盘取周期末日收盘，最高取周期内最高，最低取周期内最低，成交量求和。</p><div class="course-formula">周期聚合：O=首日O，C=末日C，H=max(H)，L=min(L)，V=Σ日成交量。</div></div>
+  <div><h4>二、510330真实行情案例</h4><p>日线最近一根：2026-11-19：开盘 4.218、收盘 4.234、最高 4.249、最低 4.183，为阳线；实体 0.016（约占开盘价 0.38%），上影 0.015、下影 0.035。 共聚合 25 根周K；最近一根覆盖 2026-11-16 至 2026-11-19，开盘 4.240、收盘 4.234、最低 4.183、最高 4.249，成交量 49.416 亿股；前一根收盘 4.258。 共聚合 7 根月K；最近一根覆盖 2026-11-02 至 2026-11-19，开盘 4.258、收盘 4.234、最低 4.183、最高 4.397，成交量 81.777 亿股；前一根收盘 4.238。</p></div>
+ </div>
+ <h4>三、跟着数据做分析</h4><ol><li>先看月K的长期位置，但本次采集窗口可能只覆盖少数月份。</li><li>再看周K的中期方向，检查周收盘与周内高低点。</li><li>最后回到日K寻找具体价格行为与量能变化。</li><li>若日线与周线冲突，降低结论强度，不强行解释成同向。</li></ol>
+ <p class="course-caution"><b>容易误判：</b>本报告周/月K由采集到的日线聚合；窗口外历史没有被补齐，月线根数少时不能据此判断长期牛熊。</p>
+ <div class="course-quiz"><b>四、本章练习：</b>周K的收盘价应取哪一天的收盘？
+  <div class="quiz-options"><button type="button" data-correct="A" data-explain="取该周最后一个实际交易日的收盘价；节假日不会虚构交易日。">查看答案与解析</button><span class="quiz-answer"></span></div>
+ </div>
+</section>
+
+<section class="course-chapter">
+ <h3>第5章　技术指标</h3>
+ <p class="course-goal"><b>本章目标：</b>理解常见指标的计算来源、读法与滞后性。</p>
+ <div class="course-grid">
+  <div><h4>一、原理与概念</h4><p>指标是价格/成交量的二次加工，不是独立于行情的神秘信号。RSI衡量近期涨跌幅相对强弱；MACD比较快慢EMA；BOLL描述均值与波动区间；ATR衡量波动幅度。</p><div class="course-formula">RSI=100−100/(1+平均上涨幅度÷平均下跌幅度)；DIF=EMA12−EMA26；DEA=EMA9(DIF)；BOLL=MA20±2σ。</div></div>
+  <div><h4>二、510330真实行情案例</h4><p>截至 2026-11-19，按日收盘价计算 RSI(14)=49.4；MACD DIF=-0.0739、DEA=-0.0813、柱体=0.0148；BOLL(20,2) 中轨=4.292、上轨=4.384、下轨=4.199；ATR(14)=0.062。</p></div>
+ </div>
+ <h4>三、跟着数据做分析</h4><ol><li>先确认指标参数与计算口径，避免不同软件参数不一致。</li><li>RSI高低只描述强弱，不意味着立即反转。</li><li>MACD观察DIF/DEA相对位置、零轴和柱体变化。</li><li>BOLL看价格相对通道的位置；ATR只衡量波动，不判断方向。</li></ol>
+ <p class="course-caution"><b>容易误判：</b>指标由历史数据计算，存在滞后；多个同源指标同时发出信号，不代表证据完全独立。</p>
+ <div class="course-quiz"><b>四、本章练习：</b>ATR(14)主要回答什么问题？
+  <div class="quiz-options"><button type="button" data-correct="B" data-explain="ATR衡量近期真实波幅/波动程度，不提供上涨或下跌方向。">查看答案与解析</button><span class="quiz-answer"></span></div>
+ </div>
+</section>
+
+<section class="course-chapter">
+ <h3>第6章　量价关系综合应用</h3>
+ <p class="course-goal"><b>本章目标：</b>把趋势、周期、K线、成交量和指标组成可复核、可证伪的研究判断。</p>
+ <div class="course-grid">
+  <div><h4>一、原理与概念</h4><p>综合分析不是把指标投票相加，而是先确定周期背景，再陈述价格事实、量能事实和指标状态，最后列出支持证据、反例与失效条件。</p><div class="course-formula">分析顺序：周期背景 → 趋势结构 → 关键价位 → 量价确认 → 指标辅助 → 触发/失效条件。</div></div>
+  <div><h4>二、510330真实行情案例</h4><p>把证据放在一起：价格位置为“收盘处于MA5与MA20之间”；2026-11-19 成交 24.577 亿股；近5日均量 10.282 亿股，量比(5日) 2.39；近20日均量 5.901 亿股，量比(20日) 4.16。 CMF(20)=+0.410（量价统计指标，并非真实账户资金流）。当前报告的原始日线样本为实际采集窗口，不代表完整牛熊周期。</p></div>
+ </div>
+ <h4>三、跟着数据做分析</h4><ol><li>先用周/月周期确定背景，并注明样本长度限制。</li><li>在日线上描述价格与均线、前高前低的位置。</li><li>检查成交量相对均量是否放大，以及放量发生在上涨还是下跌日。</li><li>用CMF/RSI/MACD等辅助验证，不把指标当成资金账户事实。</li><li>写出反面证据和下一步观察条件；条件未满足前保持结论开放。</li></ol>
+ <p class="course-caution"><b>容易误判：</b>CMF、内外盘是成交数据推断，不等同基金申赎或真实主力账户流向；技术分析也不能替代估值、公告与风险评估。</p>
+ <div class="course-quiz"><b>四、本章练习：</b>一个完整的量价结论至少应包含什么？
+  <div class="quiz-options"><button type="button" data-correct="C" data-explain="至少包括明确周期、价格事实、量能基准、解释、反例/风险以及结论失效条件。">查看答案与解析</button><span class="quiz-answer"></span></div>
+ </div>
+</section></div>
+
+<div class="disclaimer">
+<b>免责声明</b>：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
+</div>
+</div>
+
+<script>
+var CD = {"dates": ["08-12", "08-13", "08-14", "08-17", "08-18", "08-19", "08-20", "08-21", "08-24", "08-25", "08-26", "08-27", "08-28", "08-31", "09-01", "09-02", "09-03", "09-04", "09-07", "09-08", "09-09", "09-10", "09-11", "09-14", "09-15", "09-24", "09-28", "09-29", "09-30", "10-08", "10-09", "10-12", "10-13", "10-14", "10-15", "10-16", "10-19", "10-20", "10-21", "10-22", "10-23", "10-26", "10-27", "10-28", "10-29", "10-30", "11-02", "11-03", "11-04", "11-05", "11-06", "11-09", "11-10", "11-11", "11-12", "11-13", "11-16", "11-17", "11-18", "11-19"], "ohlc": [[4.929, 4.952, 4.922, 4.961], [4.97, 4.927, 4.922, 4.99], [4.938, 4.926, 4.897, 4.938], [4.924, 5.004, 4.924, 5.006], [5.002, 4.991, 4.948, 5.007], [4.951, 4.848, 4.829, 4.951], [4.874, 4.85, 4.83, 4.89], [4.843, 4.881, 4.84, 4.891], [4.882, 4.824, 4.786, 4.885], [4.796, 4.813, 4.784, 4.837], [4.813, 4.853, 4.809, 4.88], [4.855, 4.895, 4.85, 4.896], [4.891, 4.879, 4.876, 4.907], [4.853, 4.884, 4.817, 4.892], [4.875, 4.879, 4.867, 4.908], [4.862, 4.817, 4.794, 4.863], [4.823, 4.819, 4.8, 4.849], [4.832, 4.812, 4.796, 4.872], [4.828, 4.837, 4.809, 4.848], [4.834, 4.823, 4.806, 4.855], [4.829, 4.837, 4.81, 4.846], [4.816, 4.816, 4.795, 4.838], [4.79, 4.772, 4.723, 4.791], [4.743, 4.746, 4.732, 4.771], [4.74, 4.712, 4.704, 4.763], [4.777, 4.711, 4.704, 4.777], [4.701, 4.6, 4.582, 4.705], [4.588, 4.608, 4.585, 4.618], [4.609, 4.621, 4.604, 4.634], [4.618, 4.57, 4.546, 4.649], [4.558, 4.575, 4.493, 4.588], [4.606, 4.547, 4.537, 4.606], [4.512, 4.539, 4.471, 4.573], [4.52, 4.476, 4.468, 4.538], [4.415, 4.427, 4.366, 4.43], [4.436, 4.43, 4.379, 4.465], [4.407, 4.431, 4.401, 4.449], [4.419, 4.404, 4.364, 4.432], [4.414, 4.36, 4.347, 4.416], [4.358, 4.288, 4.271, 4.367], [4.257, 4.353, 4.204, 4.368], [4.33, 4.356, 4.31, 4.366], [4.362, 4.301, 4.301, 4.37], [4.333, 4.331, 4.309, 4.346], [4.322, 4.288, 4.279, 4.323], [4.236, 4.238, 4.218, 4.303], [4.258, 4.259, 4.238, 4.296], [4.25, 4.272, 4.217, 4.282], [4.266, 4.354, 4.236, 4.37], [4.33, 4.364, 4.324, 4.397], [4.31, 4.305, 4.274, 4.326], [4.315, 4.308, 4.307, 4.339], [4.341, 4.312, 4.306, 4.347], [4.3, 4.329, 4.285, 4.338], [4.321, 4.292, 4.284, 4.355], [4.295, 4.258, 4.252, 4.303], [4.24, 4.227, 4.208, 4.247], [4.21, 4.221, 4.191, 4.235], [4.23, 4.23, 4.196, 4.239], [4.218, 4.234, 4.183, 4.249]], "vols": [0.908, 1.192, 1.049, 0.886, 2.037, 1.731, 0.72, 1.517, 1.171, 1.213, 0.645, 0.981, 0.523, 0.624, 0.836, 0.902, 0.61, 0.777, 1.182, 0.993, 0.759, 0.624, 0.999, 0.765, 0.919, 1.199, 1.865, 0.701, 0.738, 0.779, 1.307, 0.781, 0.897, 0.781, 1.447, 1.203, 0.796, 9.58, 1.648, 9.425, 15.056, 14.818, 2.556, 1.819, 0.863, 1.129, 3.096, 14.731, 2.542, 2.572, 1.53, 0.929, 1.435, 2.126, 1.406, 1.996, 8.155, 7.745, 8.938, 24.577], "ma5": [null, null, null, null, 4.96, 4.939, 4.924, 4.915, 4.879, 4.843, 4.844, 4.853, 4.853, 4.865, 4.878, 4.871, 4.856, 4.842, 4.833, 4.822, 4.826, 4.825, 4.817, 4.799, 4.777, 4.751, 4.708, 4.675, 4.65, 4.622, 4.595, 4.584, 4.57, 4.541, 4.513, 4.484, 4.461, 4.434, 4.41, 4.383, 4.367, 4.352, 4.332, 4.326, 4.326, 4.303, 4.283, 4.278, 4.282, 4.297, 4.311, 4.321, 4.329, 4.324, 4.309, 4.3, 4.284, 4.265, 4.246, 4.234], "ma20": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 4.876, 4.87, 4.864, 4.857, 4.844, 4.83, 4.823, 4.81, 4.797, 4.787, 4.775, 4.761, 4.743, 4.726, 4.706, 4.683, 4.664, 4.644, 4.624, 4.6, 4.573, 4.549, 4.526, 4.503, 4.482, 4.461, 4.437, 4.42, 4.403, 4.39, 4.38, 4.366, 4.354, 4.343, 4.335, 4.329, 4.32, 4.31, 4.301, 4.294, 4.292], "vma10": [null, null, null, null, null, null, null, null, null, 1.242, 1.216, 1.195, 1.143, 1.116, 0.996, 0.913, 0.902, 0.828, 0.829, 0.807, 0.819, 0.783, 0.831, 0.845, 0.853, 0.883, 1.008, 1.001, 0.956, 0.935, 0.99, 1.005, 0.995, 0.997, 1.05, 1.05, 0.943, 1.831, 1.922, 2.787, 4.161, 5.565, 5.731, 5.835, 5.776, 5.769, 5.999, 6.514, 6.603, 5.918, 4.566, 3.177, 3.064, 3.095, 3.149, 3.236, 3.742, 3.044, 3.683, 5.884], "full_dates": ["2026-05-27", "2026-05-28", "2026-05-29", "2026-06-01", "2026-06-02", "2026-06-03", "2026-06-04", "2026-06-05", "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11", "2026-06-12", "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18", "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25", "2026-06-26", "2026-06-29", "2026-06-30", "2026-07-01", "2026-07-02", "2026-07-03", "2026-07-06", "2026-07-07", "2026-07-08", "2026-07-09", "2026-07-10", "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-29", "2026-07-30", "2026-07-31", "2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13", "2026-08-14", "2026-08-17", "2026-08-18", "2026-08-19", "2026-08-20", "2026-08-21", "2026-08-24", "2026-08-25", "2026-08-26", "2026-08-27", "2026-08-28", "2026-08-31", "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-07", "2026-09-08", "2026-09-09", "2026-09-10", "2026-09-11", "2026-09-14", "2026-09-15", "2026-09-24", "2026-09-28", "2026-09-29", "2026-09-30", "2026-10-08", "2026-10-09", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23", "2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30", "2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05", "2026-11-06", "2026-11-09", "2026-11-10", "2026-11-11", "2026-11-12", "2026-11-13", "2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19"], "full_ohlc": [[5.168, 5.125, 5.116, 5.195], [5.12, 5.135, 5.061, 5.148], [5.143, 5.124, 5.105, 5.18], [5.12, 5.075, 5.06, 5.142], [5.071, 5.142, 5.056, 5.16], [5.136, 5.172, 5.132, 5.222], [5.143, 5.13, 5.112, 5.165], [5.128, 5.038, 5.025, 5.15], [4.996, 4.941, 4.896, 5.006], [4.948, 5.025, 4.934, 5.026], [4.984, 4.974, 4.947, 5.01], [4.952, 4.948, 4.912, 4.988], [4.99, 5.012, 4.984, 5.043], [5.054, 5.118, 5.036, 5.12], [5.122, 5.113, 5.099, 5.138], [5.101, 5.165, 5.095, 5.166], [5.15, 5.191, 5.146, 5.209], [5.185, 5.302, 5.165, 5.303], [5.29, 5.15, 5.121, 5.305], [5.147, 5.176, 5.12, 5.185], [5.176, 5.259, 5.172, 5.268], [5.228, 5.112, 5.085, 5.228], [5.122, 5.176, 5.071, 5.178], [5.158, 5.23, 5.149, 5.236], [5.23, 5.209, 5.173, 5.267], [5.187, 5.059, 5.041, 5.187], [5.042, 5.096, 5.042, 5.14], [5.105, 5.083, 5.033, 5.12], [5.044, 5.036, 4.997, 5.081], [5.031, 5.006, 4.995, 5.077], [5.004, 5.128, 4.979, 5.139], [5.123, 5.041, 5.033, 5.157], [4.999, 4.94, 4.915, 5.025], [4.94, 5.053, 4.898, 5.053], [5.051, 5.058, 5.022, 5.078], [4.821, 4.854, 4.769, 4.885], [4.829, 4.797, 4.728, 4.85], [4.872, 4.85, 4.841, 4.9], [4.841, 4.798, 4.785, 4.841], [4.809, 4.856, 4.809, 4.87], [4.835, 4.914, 4.825, 4.939], [4.884, 4.913, 4.868, 4.934], [4.903, 4.955, 4.903, 4.967], [4.961, 4.961, 4.924, 4.973], [4.951, 4.929, 4.924, 4.978], [4.929, 4.952, 4.922, 4.961], [4.97, 4.927, 4.922, 4.99], [4.938, 4.926, 4.897, 4.938], [4.924, 5.004, 4.924, 5.006], [5.002, 4.991, 4.948, 5.007], [4.951, 4.848, 4.829, 4.951], [4.874, 4.85, 4.83, 4.89], [4.843, 4.881, 4.84, 4.891], [4.882, 4.824, 4.786, 4.885], [4.796, 4.813, 4.784, 4.837], [4.813, 4.853, 4.809, 4.88], [4.855, 4.895, 4.85, 4.896], [4.891, 4.879, 4.876, 4.907], [4.853, 4.884, 4.817, 4.892], [4.875, 4.879, 4.867, 4.908], [4.862, 4.817, 4.794, 4.863], [4.823, 4.819, 4.8, 4.849], [4.832, 4.812, 4.796, 4.872], [4.828, 4.837, 4.809, 4.848], [4.834, 4.823, 4.806, 4.855], [4.829, 4.837, 4.81, 4.846], [4.816, 4.816, 4.795, 4.838], [4.79, 4.772, 4.723, 4.791], [4.743, 4.746, 4.732, 4.771], [4.74, 4.712, 4.704, 4.763], [4.777, 4.711, 4.704, 4.777], [4.701, 4.6, 4.582, 4.705], [4.588, 4.608, 4.585, 4.618], [4.609, 4.621, 4.604, 4.634], [4.618, 4.57, 4.546, 4.649], [4.558, 4.575, 4.493, 4.588], [4.606, 4.547, 4.537, 4.606], [4.512, 4.539, 4.471, 4.573], [4.52, 4.476, 4.468, 4.538], [4.415, 4.427, 4.366, 4.43], [4.436, 4.43, 4.379, 4.465], [4.407, 4.431, 4.401, 4.449], [4.419, 4.404, 4.364, 4.432], [4.414, 4.36, 4.347, 4.416], [4.358, 4.288, 4.271, 4.367], [4.257, 4.353, 4.204, 4.368], [4.33, 4.356, 4.31, 4.366], [4.362, 4.301, 4.301, 4.37], [4.333, 4.331, 4.309, 4.346], [4.322, 4.288, 4.279, 4.323], [4.236, 4.238, 4.218, 4.303], [4.258, 4.259, 4.238, 4.296], [4.25, 4.272, 4.217, 4.282], [4.266, 4.354, 4.236, 4.37], [4.33, 4.364, 4.324, 4.397], [4.31, 4.305, 4.274, 4.326], [4.315, 4.308, 4.307, 4.339], [4.341, 4.312, 4.306, 4.347], [4.3, 4.329, 4.285, 4.338], [4.321, 4.292, 4.284, 4.355], [4.295, 4.258, 4.252, 4.303], [4.24, 4.227, 4.208, 4.247], [4.21, 4.221, 4.191, 4.235], [4.23, 4.23, 4.196, 4.239], [4.218, 4.234, 4.183, 4.249]], "full_vols": [3.5197, 0.7615, 1.1769, 0.5383, 0.7925, 1.3289, 0.7179, 1.2131, 2.6062, 0.8583, 0.6731, 0.9627, 2.3144, 5.6561, 4.5722, 5.0158, 6.8052, 3.4346, 11.3873, 12.8345, 18.5339, 1.1165, 5.9716, 8.3299, 1.02, 1.278, 1.2652, 1.3268, 1.1156, 1.5859, 1.4932, 1.1213, 2.0539, 1.8513, 1.1286, 1.3891, 1.504, 1.4478, 1.3501, 1.4096, 1.1323, 1.3045, 0.8025, 0.4624, 0.5298, 0.9078, 1.1917, 1.0494, 0.886, 2.037, 1.7308, 0.7202, 1.5173, 1.1712, 1.2134, 0.6451, 0.9813, 0.5229, 0.6237, 0.8356, 0.9015, 0.6102, 0.777, 1.1818, 0.9935, 0.7595, 0.6238, 0.9991, 0.7652, 0.9187, 1.1993, 1.8645, 0.7015, 0.7381, 0.779, 1.3072, 0.7812, 0.8974, 0.7807, 1.4471, 1.2027, 0.796, 9.5799, 1.6485, 9.4246, 15.0561, 14.8179, 2.5564, 1.8193, 0.863, 1.129, 3.0957, 14.7308, 2.5419, 2.5723, 1.5297, 0.9288, 1.4346, 2.1265, 1.4057, 1.9957, 8.1554, 7.745, 8.9377, 24.5774], "inside": 8121214.0, "outside": 16456220.0};
+function sw(id,el){
+  document.getElementById('k').classList.add('hidden');
+  document.getElementById('kt').classList.add('hidden');
+  document.getElementById(id).classList.remove('hidden');
+  var ts=document.querySelectorAll('.tab'); for(var i=0;i<ts.length;i++)ts[i].classList.remove('on');
+  el.classList.add('on');
+}
+function svgNode(id,markup){document.getElementById(id).innerHTML='<svg viewBox="0 0 1000 320" role="img" aria-label="行情分析图" style="width:100%;height:100%;font-family:Arial,sans-serif">'+markup+'</svg>';}
+function linePath(values,x0,y0,w,h,min,max){return values.map(function(v,i){var x=x0+i*w/Math.max(1,values.length-1),y=y0+h-(v-min)/(max-min||1)*h;return (i?'L':'M')+x.toFixed(1)+','+y.toFixed(1)}).join(' ');}
+(function(){
+ var n=CD.dates.length, vals=CD.ohlc.flatMap(function(x){return [x[2],x[3]]}),min=Math.min.apply(null,vals),max=Math.max.apply(null,vals),plotTop=18,plotH=185,baseY=220,step=900/Math.max(1,n);
+ var s='<line x1="45" y1="220" x2="960" y2="220" stroke="#ccd3dc"/>';
+ CD.ohlc.forEach(function(v,i){var x=50+i*step+step/2,up=v[1]>=v[0],col=up?'#d93025':'#0f9d58',yH=plotTop+(max-v[3])/(max-min||1)*plotH,yL=plotTop+(max-v[2])/(max-min||1)*plotH,yO=plotTop+(max-v[0])/(max-min||1)*plotH,yC=plotTop+(max-v[1])/(max-min||1)*plotH;s+='<line x1="'+x+'" y1="'+yH+'" x2="'+x+'" y2="'+yL+'" stroke="'+col+'"/><rect x="'+(x-step*.28)+'" y="'+Math.min(yO,yC)+'" width="'+Math.max(2,step*.56)+'" height="'+Math.max(1,Math.abs(yC-yO))+'" fill="'+col+'"/>';});
+ s+='<text x="50" y="248" fill="#667085" font-size="12">'+CD.dates[0]+'</text><text x="900" y="248" fill="#667085" font-size="12">'+CD.dates[n-1]+'</text>';
+ var vmax=Math.max.apply(null,CD.vols.concat([1]));
+ CD.vols.forEach(function(v,i){var x=50+i*step+step/2,h=v/vmax*48;s+='<rect x="'+(x-step*.28)+'" y="'+(305-h)+'" width="'+Math.max(2,step*.56)+'" height="'+h+'" fill="#9aa7b8"/>';});
+ svgNode('chart1',s);
+ var vmax2=Math.max.apply(null,CD.vols.concat([1])),bars='';
+ CD.vols.forEach(function(v,i){var x=50+i*step+step/2,h=v/vmax2*230;bars+='<rect x="'+(x-step*.3)+'" y="'+(270-h)+'" width="'+Math.max(2,step*.6)+'" height="'+h+'" fill="#9aa7b8"/>';});
+ var avg=CD.vma10.filter(function(x){return x!==null}),vmin=Math.min.apply(null,avg.concat([0])),vmax3=Math.max.apply(null,avg.concat([1]));
+ bars+='<path d="'+linePath(CD.vma10.map(function(v){return v===null?vmin:v}),50,25,900,230,vmin,vmax3)+'" fill="none" stroke="#d93025" stroke-width="3"/>';
+ svgNode('chart2',bars);
+ var total=CD.inside+CD.outside,ratio=total?CD.outside/total:0;
+ var flow='<text x="70" y="80" font-size="18" fill="#344054">外盘（主动买入）</text><rect x="70" y="100" width="850" height="42" rx="6" fill="#e7ebf0"/><rect x="70" y="100" width="'+(850*ratio)+'" height="42" rx="6" fill="#d93025"/><text x="70" y="180" font-size="18" fill="#344054">内盘（主动卖出）</text><rect x="70" y="200" width="850" height="42" rx="6" fill="#e7ebf0"/><rect x="70" y="200" width="'+(850*(1-ratio))+'" height="42" rx="6" fill="#0f9d58"/><text x="70" y="285" font-size="16" fill="#667085">外盘占比 '+(ratio*100).toFixed(1)+'% · 内盘占比 '+((1-ratio)*100).toFixed(1)+'%</text>';
+ svgNode('chart3',flow);
+})();
+</script>
+<script>
+document.querySelectorAll('.quiz-options button').forEach(function(b){
+ b.addEventListener('click',function(){
+  var out=b.parentNode.querySelector('.quiz-answer');
+  out.textContent='答案：'+b.getAttribute('data-correct')+'。'+b.getAttribute('data-explain');
+ });
+});
+</script>
+</body>
+</html>
