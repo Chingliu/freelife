@@ -125,10 +125,8 @@ def build_course_html(chart, metrics):
                f"CMF(20)={metrics.get('moneyflow',{}).get('cmf20',0):+.3f}（量价统计指标，并非真实账户资金流）。"
                "当前报告的原始日线样本为实际采集窗口，不代表完整牛熊周期。")
     sections=[]
-    snap = metrics.get("snapshot", {})
-    live_note = ("注意：TQ 快照标记为盘中，最新日K/当周K/当月K可能尚未完成，"
-                 "不要把盘中临时形态当作收盘确认。" if snap.get("hqdate") else
-                 "数据状态：以本次TQ返回的最新日线为准；如数据源在交易时段刷新，最新周期仍可能是未完成K线。")
+    live_note = ("如果本次采集发生在交易时段，最新日K/当周K/当月K尚未完成；"
+                 "盘中形态不能当作收盘确认。若在收盘后采集，则以TQ返回的最新完整日线为准。")
     sections.append('<p class="course-caution"><b>数据时点：</b>' + esc(live_note) +
                     ' 本次原始日线共 ' + str(len(bars)) + ' 根，覆盖 ' +
                     esc(dates[0]) + ' 至 ' + esc(dates[-1]) + '。</p>')
