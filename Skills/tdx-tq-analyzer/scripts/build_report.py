@@ -167,6 +167,8 @@ __BC_GATE__
 <div class="note"><b>边界：</b>__BC_DISCLAIMER__ 本报告不含样本外回测、跨标的验证与消息面检索，不得据此直接下单。</div>
 </div>
 
+<div class="card"><h2>六章技术分析实战课程</h2><p class="note">以下课程以本次 TQ 实际日线数据为案例；所有日期、价格、成交量和指标均由原始K线计算。周K/月K由日线聚合，样本不足处会明确说明。</p>__COURSE_CONTENT__</div>
+
 <div class="disclaimer">
 <b>免责声明</b>：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
 </div>
@@ -330,7 +332,11 @@ def build(m, chart):
     cmf_desc = ("中期净流入" if cmf20 > 0.05 else ("中期净流出" if cmf20 < -0.05 else "中性"))
     vr_med60 = vol["today_yi"] / vol["med60_yi"] if vol["med60_yi"] else 0
 
+    from course_content import build_course_html
+    course_html = build_course_html(chart, m)
+
     rep = {
+        "__COURSE_CONTENT__": course_html,
         "__TITLE__": title, "__TAG__": "盘中快照" if s.get("hqdate") else "盘后",
         "__ASOF__": asof, "__SNAPTIME__": "", "__NAME__": name, "__CODE__": code,
         "__TLDR__": "".join(tldr), "__KPIS__": kpis, "__SNAPNOTE__": snapnote,
