@@ -30,6 +30,15 @@ class CourseContentTests(unittest.TestCase):
         self.assertIn("2026-11-19", page)
         self.assertIn("如果本次采集发生在交易时段", page)
 
+    def test_charts_teach_by_direct_annotations(self):
+        page = build_course_html(self.chart, self.metrics)
+        # Labels must point to the visual feature, not merely describe it in prose.
+        for marker in ("上影线", "实体", "下影线", "最新量柱", "MA5", "MA20",
+                       "MA60", "周K：看中期波段结构", "月K：看长期大方向",
+                       "弱势参考 30", "强势参考 70", "零轴"):
+            self.assertIn(marker, page)
+        self.assertIn("<polyline points=", page)  # actual moving-average curves
+
     def test_missing_data_does_not_fabricate_examples(self):
         page = build_course_html({}, self.metrics)
         self.assertIn("没有可用的真实日线数组", page)
