@@ -59,7 +59,12 @@ th:first-child,td:first-child{text-align:left}
 .bc-intro ol{font-size:13px;color:#374151;padding-left:20px;line-height:1.9}
 .bc-intro ol li{margin-bottom:4px}
 .bc-intro .formula{background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:6px 12px;font-family:monospace;font-size:12px;color:#1f2329;margin:6px 0}
-.course-chapter{border-top:1px solid #e5e7eb;padding:20px 0}.course-chapter h3{font-size:17px;margin-bottom:8px;color:#24344d}
+.course-chapter{border-top:1px solid #e5e7eb;padding:20px 0}
+.course-diagram{margin:14px 0 18px;padding:12px;background:#fbfcfe;border:1px solid #e4e8ef;border-radius:9px;overflow:hidden}
+.diagram-title{font-size:13px;font-weight:600;color:#344054;margin:0 0 8px}
+.course-diagram svg{display:block;width:100%;height:auto;max-height:360px}
+@media(max-width:640px){.course-diagram{padding:7px}.course-diagram svg{min-width:580px}.course-diagram{overflow-x:auto}}
+.course-chapter h3{font-size:17px;margin-bottom:8px;color:#24344d}
 .course-chapter h4{font-size:14px;margin:12px 0 6px}.course-chapter p,.course-chapter li{font-size:13px;line-height:1.85}
 .course-goal{color:#475467;margin-bottom:10px}.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
 .course-grid>div{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:13px}
