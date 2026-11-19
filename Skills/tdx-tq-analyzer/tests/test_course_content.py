@@ -28,7 +28,7 @@ class CourseContentTests(unittest.TestCase):
             self.assertIn(title, page)
         self.assertIn("4.050", page)
         self.assertIn("2026-11-19", page)
-        self.assertIn("最新日K/当周K/当月K可能尚未完成", page)
+        self.assertIn("如果本次采集发生在交易时段", page)
 
     def test_missing_data_does_not_fabricate_examples(self):
         page = build_course_html({}, self.metrics)
