@@ -59,6 +59,15 @@ th:first-child,td:first-child{text-align:left}
 .bc-intro ol{font-size:13px;color:#374151;padding-left:20px;line-height:1.9}
 .bc-intro ol li{margin-bottom:4px}
 .bc-intro .formula{background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:6px 12px;font-family:monospace;font-size:12px;color:#1f2329;margin:6px 0}
+.course-chapter{border-top:1px solid #e5e7eb;padding:20px 0}.course-chapter h3{font-size:17px;margin-bottom:8px;color:#24344d}
+.course-chapter h4{font-size:14px;margin:12px 0 6px}.course-chapter p,.course-chapter li{font-size:13px;line-height:1.85}
+.course-goal{color:#475467;margin-bottom:10px}.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.course-grid>div{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:13px}
+.course-formula{background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:9px;margin-top:8px;font:12px/1.7 monospace;overflow-wrap:anywhere}
+.course-chapter ol{padding-left:22px}.course-chapter li{margin:4px 0}.course-caution{background:#fff8e8;border-left:3px solid #d99b2b;padding:9px 12px;margin-top:10px}
+.course-quiz{background:#f0f6ff;border:1px solid #c3d5f5;border-radius:8px;padding:12px;margin-top:12px;font-size:13px}
+.quiz-options{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}.quiz-options button{border:1px solid #9db6dc;background:white;border-radius:6px;padding:6px 10px;cursor:pointer}
+.quiz-answer{color:#2459a6;font-weight:600}
 </style>
 </head>
 <body>
@@ -202,6 +211,14 @@ function linePath(values,x0,y0,w,h,min,max){return values.map(function(v,i){var 
  var flow='<text x="70" y="80" font-size="18" fill="#344054">外盘（主动买入）</text><rect x="70" y="100" width="850" height="42" rx="6" fill="#e7ebf0"/><rect x="70" y="100" width="'+(850*ratio)+'" height="42" rx="6" fill="#d93025"/><text x="70" y="180" font-size="18" fill="#344054">内盘（主动卖出）</text><rect x="70" y="200" width="850" height="42" rx="6" fill="#e7ebf0"/><rect x="70" y="200" width="'+(850*(1-ratio))+'" height="42" rx="6" fill="#0f9d58"/><text x="70" y="285" font-size="16" fill="#667085">外盘占比 '+(ratio*100).toFixed(1)+'% · 内盘占比 '+((1-ratio)*100).toFixed(1)+'%</text>';
  svgNode('chart3',flow);
 })();
+</script>
+<script>
+document.querySelectorAll('.quiz-options button').forEach(function(b){
+ b.addEventListener('click',function(){
+  var out=b.parentNode.querySelector('.quiz-answer');
+  out.textContent='答案：'+b.getAttribute('data-correct')+'。'+b.getAttribute('data-explain');
+ });
+});
 </script>
 </body>
 </html>
