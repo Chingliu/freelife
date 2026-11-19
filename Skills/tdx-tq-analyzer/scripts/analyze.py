@@ -288,6 +288,11 @@ def analyze(raw):
         "ma5": [None if i < 4 else round(r.Close.iloc[i-4:i+1].mean(), 3) for i in range(len(r))],
         "ma20": [None if i < 19 else round(r.Close.iloc[i-19:i+1].mean(), 3) for i in range(len(r))],
         "vma10": [None if i < 9 else round(r.Volume.iloc[i-9:i+1].mean()/1e8, 3) for i in range(len(r))],
+        # Full fetched daily history is retained for teaching and period aggregation.
+        "full_dates": [i.strftime("%Y-%m-%d") for i in df.index],
+        "full_ohlc": [[round(x.Open, 3), round(x.Close, 3), round(x.Low, 3), round(x.High, 3)]
+                      for _, x in df.iterrows()],
+        "full_vols": [round(x.Volume / 1e8, 4) for _, x in df.iterrows()],
         "inside": inside, "outside": outside,
     }
     return metrics, chart

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Build a self-contained ECharts HTML report from metrics + chart JSON.
-Pure Python. The HTML loads ECharts from CDN, so internet is needed to view charts.
+Build a self-contained offline HTML report from metrics + chart JSON.
+Pure Python. Charts are rendered with inline SVG and vanilla JavaScript; no network dependency.
 
 Usage:
     python build_report.py <METRICS_JSON> <CHART_JSON> <OUTPUT_HTML>
@@ -15,7 +15,7 @@ TPL = r"""<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>__TITLE__</title>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6f8;color:#1f2329;line-height:1.6;padding:28px 16px}
@@ -59,6 +59,20 @@ th:first-child,td:first-child{text-align:left}
 .bc-intro ol{font-size:13px;color:#374151;padding-left:20px;line-height:1.9}
 .bc-intro ol li{margin-bottom:4px}
 .bc-intro .formula{background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:6px 12px;font-family:monospace;font-size:12px;color:#1f2329;margin:6px 0}
+.course-chapter{border-top:1px solid #e5e7eb;padding:20px 0}
+.course-diagram{margin:14px 0 18px;padding:12px;background:#fbfcfe;border:1px solid #e4e8ef;border-radius:9px;overflow:hidden}
+.diagram-title{font-size:13px;font-weight:600;color:#344054;margin:0 0 8px}
+.course-diagram svg{display:block;width:100%;height:auto;max-height:360px}
+@media(max-width:640px){.course-diagram{padding:7px}.course-diagram svg{min-width:580px}.course-diagram{overflow-x:auto}}
+.course-chapter h3{font-size:17px;margin-bottom:8px;color:#24344d}
+.course-chapter h4{font-size:14px;margin:12px 0 6px}.course-chapter p,.course-chapter li{font-size:13px;line-height:1.85}
+.course-goal{color:#475467;margin-bottom:10px}.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.course-grid>div{background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:13px}
+.course-formula{background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:9px;margin-top:8px;font:12px/1.7 monospace;overflow-wrap:anywhere}
+.course-chapter ol{padding-left:22px}.course-chapter li{margin:4px 0}.course-caution{background:#fff8e8;border-left:3px solid #d99b2b;padding:9px 12px;margin-top:10px}
+.course-quiz{background:#f0f6ff;border:1px solid #c3d5f5;border-radius:8px;padding:12px;margin-top:12px;font-size:13px}
+.quiz-options{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}.quiz-options button{border:1px solid #9db6dc;background:white;border-radius:6px;padding:6px 10px;cursor:pointer}
+.quiz-answer{color:#2459a6;font-weight:600}
 </style>
 </head>
 <body>
@@ -167,6 +181,8 @@ __BC_GATE__
 <div class="note"><b>边界：</b>__BC_DISCLAIMER__ 本报告不含样本外回测、跨标的验证与消息面检索，不得据此直接下单。</div>
 </div>
 
+<div class="card"><h2>六章技术分析实战课程</h2><p class="note">以下课程以本次 TQ 实际日线数据为案例；所有日期、价格、成交量和指标均由原始K线计算。周K/月K由日线聚合，样本不足处会明确说明。</p>__COURSE_CONTENT__</div>
+
 <div class="disclaimer">
 <b>免责声明</b>：以上内容基于公开数据和量化分析，仅供参考，不构成投资建议。市场有风险，投资需谨慎。任何投资决策应结合个人风险承受能力、资金状况和投资目标独立判断，必要时咨询持牌专业机构。过往表现不预示未来收益。
 </div>
@@ -181,40 +197,32 @@ function sw(id,el){
   var ts=document.querySelectorAll('.tab'); for(var i=0;i<ts.length;i++)ts[i].classList.remove('on');
   el.classList.add('on');
 }
-echarts.init(document.getElementById('chart1')).setOption({
-  tooltip:{trigger:'axis',axisPointer:{type:'cross'}},
-  legend:{data:['日K','MA5','MA20','成交量']},
-  grid:[{left:55,right:20,top:30,height:'55%'},{left:55,right:20,top:'72%',height:'18%'}],
-  xAxis:[{type:'category',data:CD.dates},{type:'category',data:CD.dates,gridIndex:1,axisLabel:{show:false}}],
-  yAxis:[{scale:true},{scale:true,gridIndex:1,splitLine:{show:false}}],
-  series:[
-    {name:'日K',type:'candlestick',data:CD.ohlc,itemStyle:{color:'#d93025',color0:'#0f9d58',borderColor:'#d93025',borderColor0:'#0f9d58'}},
-    {name:'MA5',type:'line',data:CD.ma5,smooth:true,showSymbol:false,lineStyle:{width:1,color:'#e8a33d'}},
-    {name:'MA20',type:'line',data:CD.ma20,smooth:true,showSymbol:false,lineStyle:{width:1,color:'#5b7fc7'}},
-    {name:'成交量',type:'bar',xAxisIndex:1,yAxisIndex:1,data:CD.vols,itemStyle:{color:'#93a4bd'}}
-  ]
-});
-echarts.init(document.getElementById('chart2')).setOption({
-  tooltip:{trigger:'axis'},
-  legend:{data:['成交量(亿股)','10日均量']},
-  xAxis:{type:'category',data:CD.dates},
-  yAxis:{type:'value',name:'亿股'},
-  series:[
-    {name:'成交量(亿股)',type:'bar',data:CD.vols,itemStyle:{color:'#9aa7b8'}},
-    {name:'10日均量',type:'line',data:CD.vma10,smooth:true,showSymbol:false,lineStyle:{width:2,color:'#d93025'}}
-  ]
-});
-echarts.init(document.getElementById('chart3')).setOption({
-  tooltip:{trigger:'item',formatter:'{b}: {d}%'},
-  legend:{data:['外盘(主动买入)','内盘(主动卖出)']},
-  series:[{
-    type:'pie',radius:['42%','68%'],
-    label:{formatter:'{b}\n{d}%'},
-    data:[
-      {name:'外盘(主动买入)',value:Math.round(CD.outside),itemStyle:{color:'#d93025'}},
-      {name:'内盘(主动卖出)',value:Math.round(CD.inside),itemStyle:{color:'#0f9d58'}}
-    ]
-  }]
+function svgNode(id,markup){document.getElementById(id).innerHTML='<svg viewBox="0 0 1000 320" role="img" aria-label="行情分析图" style="width:100%;height:100%;font-family:Arial,sans-serif">'+markup+'</svg>';}
+function linePath(values,x0,y0,w,h,min,max){return values.map(function(v,i){var x=x0+i*w/Math.max(1,values.length-1),y=y0+h-(v-min)/(max-min||1)*h;return (i?'L':'M')+x.toFixed(1)+','+y.toFixed(1)}).join(' ');}
+(function(){
+ var n=CD.dates.length, vals=CD.ohlc.flatMap(function(x){return [x[2],x[3]]}),min=Math.min.apply(null,vals),max=Math.max.apply(null,vals),plotTop=18,plotH=185,baseY=220,step=900/Math.max(1,n);
+ var s='<line x1="45" y1="220" x2="960" y2="220" stroke="#ccd3dc"/>';
+ CD.ohlc.forEach(function(v,i){var x=50+i*step+step/2,up=v[1]>=v[0],col=up?'#d93025':'#0f9d58',yH=plotTop+(max-v[3])/(max-min||1)*plotH,yL=plotTop+(max-v[2])/(max-min||1)*plotH,yO=plotTop+(max-v[0])/(max-min||1)*plotH,yC=plotTop+(max-v[1])/(max-min||1)*plotH;s+='<line x1="'+x+'" y1="'+yH+'" x2="'+x+'" y2="'+yL+'" stroke="'+col+'"/><rect x="'+(x-step*.28)+'" y="'+Math.min(yO,yC)+'" width="'+Math.max(2,step*.56)+'" height="'+Math.max(1,Math.abs(yC-yO))+'" fill="'+col+'"/>';});
+ s+='<text x="50" y="248" fill="#667085" font-size="12">'+CD.dates[0]+'</text><text x="900" y="248" fill="#667085" font-size="12">'+CD.dates[n-1]+'</text>';
+ var vmax=Math.max.apply(null,CD.vols.concat([1]));
+ CD.vols.forEach(function(v,i){var x=50+i*step+step/2,h=v/vmax*48;s+='<rect x="'+(x-step*.28)+'" y="'+(305-h)+'" width="'+Math.max(2,step*.56)+'" height="'+h+'" fill="#9aa7b8"/>';});
+ svgNode('chart1',s);
+ var vmax2=Math.max.apply(null,CD.vols.concat([1])),bars='';
+ CD.vols.forEach(function(v,i){var x=50+i*step+step/2,h=v/vmax2*230;bars+='<rect x="'+(x-step*.3)+'" y="'+(270-h)+'" width="'+Math.max(2,step*.6)+'" height="'+h+'" fill="#9aa7b8"/>';});
+ var avg=CD.vma10.filter(function(x){return x!==null}),vmin=Math.min.apply(null,avg.concat([0])),vmax3=Math.max.apply(null,avg.concat([1]));
+ bars+='<path d="'+linePath(CD.vma10.map(function(v){return v===null?vmin:v}),50,25,900,230,vmin,vmax3)+'" fill="none" stroke="#d93025" stroke-width="3"/>';
+ svgNode('chart2',bars);
+ var total=CD.inside+CD.outside,ratio=total?CD.outside/total:0;
+ var flow='<text x="70" y="80" font-size="18" fill="#344054">外盘（主动买入）</text><rect x="70" y="100" width="850" height="42" rx="6" fill="#e7ebf0"/><rect x="70" y="100" width="'+(850*ratio)+'" height="42" rx="6" fill="#d93025"/><text x="70" y="180" font-size="18" fill="#344054">内盘（主动卖出）</text><rect x="70" y="200" width="850" height="42" rx="6" fill="#e7ebf0"/><rect x="70" y="200" width="'+(850*(1-ratio))+'" height="42" rx="6" fill="#0f9d58"/><text x="70" y="285" font-size="16" fill="#667085">外盘占比 '+(ratio*100).toFixed(1)+'% · 内盘占比 '+((1-ratio)*100).toFixed(1)+'%</text>';
+ svgNode('chart3',flow);
+})();
+</script>
+<script>
+document.querySelectorAll('.quiz-options button').forEach(function(b){
+ b.addEventListener('click',function(){
+  var out=b.parentNode.querySelector('.quiz-answer');
+  out.textContent='答案：'+b.getAttribute('data-correct')+'。'+b.getAttribute('data-explain');
+ });
 });
 </script>
 </body>
@@ -346,7 +354,11 @@ def build(m, chart):
     cmf_desc = ("中期净流入" if cmf20 > 0.05 else ("中期净流出" if cmf20 < -0.05 else "中性"))
     vr_med60 = vol["today_yi"] / vol["med60_yi"] if vol["med60_yi"] else 0
 
+    from course_content import build_course_html
+    course_html = build_course_html(chart, m)
+
     rep = {
+        "__COURSE_CONTENT__": course_html,
         "__TITLE__": title, "__TAG__": "盘中快照" if s.get("hqdate") else "盘后",
         "__ASOF__": asof, "__SNAPTIME__": "", "__NAME__": name, "__CODE__": code,
         "__TLDR__": "".join(tldr), "__KPIS__": kpis, "__SNAPNOTE__": snapnote,
