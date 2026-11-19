@@ -60,7 +60,7 @@ def _svg_wrap(title, body, height=250):
             f'preserveAspectRatio="xMidYMid meet">{body}</svg></div>')
 
 
-def _candle_svg(bars, dates, indices, width=900, height=270, labels=True):
+def _candle_svg(bars, dates, indices, width=900, height=270, labels=True, title="真实K线图"):
     if not indices:
         return _svg_wrap("无可绘制K线", "", height)
     subset=[(i,bars[i]) for i in indices]
@@ -82,27 +82,33 @@ def _candle_svg(bars, dates, indices, width=900, height=270, labels=True):
         out.append(f'<rect x="{x-xstep*.27:.1f}" y="{yt:.1f}" width="{max(xstep*.54,2):.1f}" height="{bh:.1f}" fill="{color}" stroke="{color}"/>')
         if labels and (j%max(1,len(subset)//6)==0 or j==len(subset)-1):
             out.append(f'<text x="{x:.1f}" y="{bottom+18}" text-anchor="middle" font-size="11" fill="#667085">{esc(dates[i][-5:])}</text>')
-    return _svg_wrap("真实K线图", "".join(out), height)
+    return _svg_wrap(title, "".join(out), height)
 
 
 def _single_candle_svg(bar, date):
-    o,c,l,h=bar; top=28; bottom=220; mid=460
+    o,c,l,h=bar; top=32; bottom=220; mid=460
     lo=min(l,o,c)-max((h-l)*.35,.004); hi=max(h,o,c)+max((h-l)*.35,.004)
     y=lambda v: bottom-(v-lo)/(hi-lo)*(bottom-top)
     color="#d93025" if c>=o else "#159455"
-    bodytop=min(y(o),y(c)); bodyh=max(abs(y(o)-y(c)),3)
-    parts=[f'<line x1="{mid}" y1="{y(h):.1f}" x2="{mid}" y2="{y(l):.1f}" stroke="{color}" stroke-width="5"/>',
-           f'<rect x="410" y="{bodytop:.1f}" width="100" height="{bodyh:.1f}" fill="{color}" rx="2"/>']
-    # price labels and leader lines, aligned to the four actual price levels
-    labels=[("最高 H",h,70,"#344054"),("收盘 C",c,330,"#d93025" if c>=o else "#159455"),
-            ("开盘 O",o,590,"#344054"),("最低 L",l,850,"#344054")]
-    for label,v,x,col in labels:
-        yy=y(v)
-        parts.append(f'<line x1="515" y1="{yy:.1f}" x2="{x-12}" y2="{yy:.1f}" stroke="{col}" stroke-dasharray="4 3"/>')
-        parts.append(f'<text x="{x}" y="{yy-7:.1f}" font-size="16" fill="{col}" text-anchor="middle">{label} {v:.3f}</text>')
-    parts += [f'<text x="460" y="250" text-anchor="middle" font-size="14" fill="#667085">{esc(date)} · {("阳线" if c>o else "阴线" if c<o else "平盘")}</text>',
-              f'<text x="460" y="18" text-anchor="middle" font-size="13" fill="#667085">上影线 {h-max(o,c):.3f}　实体 {abs(c-o):.3f}　下影线 {min(o,c)-l:.3f}</text>']
-    return _svg_wrap("今日真实日K：四价、实体与影线逐项标注", "".join(parts), 270)
+    bodytop=min(y(o),y(c)); bodybottom=max(y(o),y(c)); bodyh=max(bodybottom-bodytop,3)
+    upper_y=y(h); lower_y=y(l)
+    parts=[
+      '<rect x="360" y="25" width="200" height="205" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>',
+      f'<line x1="{mid}" y1="{upper_y:.1f}" x2="{mid}" y2="{lower_y:.1f}" stroke="{color}" stroke-width="7"/>',
+      f'<rect x="410" y="{bodytop:.1f}" width="100" height="{bodyh:.1f}" fill="{color}" rx="3"/>',
+      f'<path d="M 405 {upper_y+2:.1f} L 285 72 L 175 72" fill="none" stroke="#d97706" stroke-width="2.5"/>',
+      '<text x="165" y="62" text-anchor="end" font-size="18" font-weight="700" fill="#b45309">上影线</text>',
+      '<text x="165" y="84" text-anchor="end" font-size="14" fill="#475467">冲高后回落的区间</text>',
+      f'<path d="M 515 {(bodytop+bodybottom)/2:.1f} L 650 125 L 780 125" fill="none" stroke="#2563eb" stroke-width="2.5"/>',
+      '<text x="790" y="118" font-size="18" font-weight="700" fill="#1d4ed8">实体</text>',
+      '<text x="790" y="140" font-size="14" fill="#475467">开盘与收盘之间</text>',
+      f'<path d="M 455 {lower_y-2:.1f} L 330 198 L 185 198" fill="none" stroke="#0f9d8a" stroke-width="2.5"/>',
+      '<text x="175" y="190" text-anchor="end" font-size="18" font-weight="700" fill="#0f766e">下影线</text>',
+      '<text x="175" y="212" text-anchor="end" font-size="14" fill="#475467">探低后收回的区间</text>',
+      f'<text x="460" y="250" text-anchor="middle" font-size="14" fill="#667085">{esc(date)} · {("阳线" if c>o else "阴线" if c<o else "平盘线")}</text>',
+      f'<text x="460" y="18" text-anchor="middle" font-size="13" fill="#667085">H {h:.3f}  O {o:.3f}  C {c:.3f}  L {l:.3f}</text>'
+    ]
+    return _svg_wrap("一眼认出K线：实体 + 上下影线", "".join(parts), 270)
 
 
 def _volume_svg(vols, dates, n=25):
@@ -118,7 +124,15 @@ def _volume_svg(vols, dates, n=25):
         ma=[sum(data[max(0,i-p+1):i+1])/len(data[max(0,i-p+1):i+1]) for i in range(len(data))]
         pts=" ".join(f"{left+(i+.5)*step:.1f},{bottom-v/mx*(bottom-top):.1f}" for i,v in enumerate(ma))
         out.append(f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="2"/>')
-    out.append('<text x="60" y="14" font-size="12" fill="#667085">蓝柱：真实成交量　橙线：5日均量　绿线：20日均量</text>')
+    last_avg=sum(data[-20:])/len(data[-20:])
+    last_ratio=data[-1]/last_avg if last_avg else 0
+    lx=left+(len(data)-.5)*step; ly=bottom-data[-1]/mx*(bottom-top)
+    out.append(f'<circle cx="{lx:.1f}" cy="{ly:.1f}" r="7" fill="none" stroke="#d93025" stroke-width="3"/>')
+    out.append(f'<path d="M {lx-5:.1f} {ly-8:.1f} L {max(left+40,lx-90):.1f} 38" stroke="#d93025" stroke-width="2" fill="none"/>')
+    out.append(f'<rect x="{left+5}" y="20" width="260" height="48" rx="8" fill="#fff7ed" stroke="#fdba74"/>')
+    out.append(f'<text x="{left+16}" y="40" font-size="14" font-weight="700" fill="#9a3412">最新量柱：{last_ratio:.2f} 倍20日均量</text>')
+    out.append(f'<text x="{left+16}" y="58" font-size="12" fill="#7c2d12">圈出当日，先比较高低，再看K线方向</text>')
+    out.append('<text x="600" y="14" font-size="12" fill="#667085">蓝柱=成交量｜橙线=MA5量｜绿线=MA20量</text>')
     return _svg_wrap("最近交易日成交量柱与均量线", "".join(out), 250)
 
 
@@ -132,6 +146,14 @@ def _line_svg(values, dates, title, color="#3267a8", n=60, zero=False):
     x=lambda i:left+(right-left)*i/max(len(vals)-1,1)
     y=lambda v:bottom-(v-lo)/(hi-lo)*(bottom-top)
     out=[]
+    if "RSI" in title:
+        for level,label in [(30,"弱势参考 30"),(70,"强势参考 70")]:
+            yy=y(level)
+            out.append(f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="#d97706" stroke-dasharray="6 4"/>')
+            out.append(f'<text x="{left+8}" y="{yy-5:.1f}" font-size="12" fill="#b45309">{label}</text>')
+    if zero and lo<=0<=hi:
+        out.append(f'<line x1="{left}" y1="{y(0):.1f}" x2="{right}" y2="{y(0):.1f}" stroke="#667085" stroke-width="1.5"/>')
+        out.append(f'<text x="{left+8}" y="{y(0)-5:.1f}" font-size="12" fill="#475467">零轴</text>')
     for t in range(5):
         v=lo+(hi-lo)*t/4; yy=y(v)
         out.append(f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="#edf0f3"/>')
@@ -144,15 +166,48 @@ def _line_svg(values, dates, title, color="#3267a8", n=60, zero=False):
 
 
 def _price_ma_svg(bars, dates, n=60):
-    start=max(0,len(bars)-n); closes=[b[1] for b in bars]
-    price=_candle_svg(bars,dates,list(range(start,len(bars))),height=280)
-    # add moving average lines as a separate synchronized panel for readability
+    start=max(0,len(bars)-n)
+    subset=bars[start:]
+    if not subset: return _svg_wrap("均线与趋势", "")
+    lo=min(x[2] for x in subset); hi=max(x[3] for x in subset)
+    pad=max((hi-lo)*.12,.001); lo-=pad; hi+=pad
+    left,right,top,bottom=58,882,18,225
+    xstep=(right-left)/len(subset)
+    y=lambda v: bottom-(v-lo)/(hi-lo)*(bottom-top)
     out=[]
-    for p,col in [(5,"#d97706"),(20,"#159455"),(60,"#805ad5")]:
-        vals=[None if i<p-1 else sum(closes[i-p+1:i+1])/p for i in range(start,len(closes))]
-        valid=[(j,v) for j,v in enumerate(vals) if v is not None]
-        if valid: out.append(f'<text x="20" y="{20+len(out)*19}" font-size="12" fill="{col}">MA{p} 最新 {valid[-1][1]:.3f}</text>')
-    return price + _svg_wrap("均线读图提示", "".join(out), 65)
+    for t in range(5):
+        v=lo+(hi-lo)*t/4; yy=y(v)
+        out.append(f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="#edf0f3"/>')
+    for j,b in enumerate(subset):
+        o,c,l,h=b; x=left+(j+.5)*xstep; col="#d93025" if c>=o else "#159455"
+        out.append(f'<line x1="{x:.1f}" y1="{y(h):.1f}" x2="{x:.1f}" y2="{y(l):.1f}" stroke="{col}" stroke-width="1.6"/>')
+        out.append(f'<rect x="{x-xstep*.27:.1f}" y="{min(y(o),y(c)):.1f}" width="{xstep*.54:.1f}" height="{max(abs(y(c)-y(o)),1.5):.1f}" fill="{col}"/>')
+    closes=[b[1] for b in bars]
+    palette={5:"#d97706",20:"#2563eb",60:"#805ad5"}
+    latest={}
+    for period,col in palette.items():
+        vals=[]
+        for i in range(start,len(bars)):
+            if i+1<period: vals.append(None)
+            else: vals.append(sum(closes[i-period+1:i+1])/period)
+        pts=[]
+        for j,v in enumerate(vals):
+            if v is not None: pts.append(f"{left+(j+.5)*xstep:.1f},{y(v):.1f}")
+        if pts:
+            out.append(f'<polyline points="{" ".join(pts)}" fill="none" stroke="{col}" stroke-width="3"/>')
+            latest[period]=vals[-1]
+    lx=right-3; ly=y(closes[-1])
+    out.append(f'<circle cx="{lx}" cy="{ly:.1f}" r="5" fill="#111827"/>')
+    out.append(f'<text x="{right-5}" y="245" text-anchor="end" font-size="12" fill="#475467">最新收盘 {closes[-1]:.3f}</text>')
+    labels=[]
+    for p,col in palette.items():
+        if p in latest: labels.append(f'<text x="{left+8}" y="{36+len(labels)*20}" font-size="14" font-weight="700" fill="{col}">MA{p} {latest[p]:.3f}</text>')
+    out.extend(labels)
+    relation="收盘在MA5/20/60之上" if all(closes[-1]>v for v in latest.values()) else ("收盘在MA5/20/60之下" if all(closes[-1]<v for v in latest.values()) else "收盘与均线交错")
+    out.append(f'<rect x="610" y="22" width="260" height="34" rx="8" fill="#eff6ff" stroke="#93c5fd"/>')
+    out.append(f'<text x="740" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">{relation}</text>')
+    out.append('<text x="60" y="265" font-size="12" fill="#667085">红/绿K线：价格｜橙/蓝/紫线：MA5/20/60</text>')
+    return _svg_wrap("趋势图解：价格结构 + 三条均线", "".join(out), 280)
 
 
 def _period_svg(rows, title):
@@ -162,7 +217,9 @@ def _period_svg(rows, title):
     for key,b in rows:
         dates.append(b[1])
         bars.append([b[2],b[3],b[4],b[5]])
-    return _candle_svg(bars,dates,list(range(len(bars))),height=250)
+    plot=_candle_svg(bars,dates,list(range(len(bars))),height=250,title=title)
+    hint = "月K：看长期大方向" if "月" in title else "周K：看中期波段结构"
+    return plot.replace("</svg>", f'<text x="480" y="242" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">{hint}</text></svg>')
 
 
 def _rsi_series(closes, period=14):
