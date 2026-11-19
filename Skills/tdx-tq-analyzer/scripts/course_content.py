@@ -53,12 +53,134 @@ def _indicators(ohlc):
             "bb_low":mean-2*sd if mean is not None else None,"atr14":atr}
 
 
-def _section(num, title, goal, concept, formula, case, steps, caution, question, answer, explanation):
+
+def _svg_wrap(title, body, height=250):
+    return (f'<div class="course-diagram"><div class="diagram-title">{esc(title)}</div>'
+            f'<svg viewBox="0 0 960 {height}" role="img" aria-label="{esc(title)}" '
+            f'preserveAspectRatio="xMidYMid meet">{body}</svg></div>')
+
+
+def _candle_svg(bars, dates, indices, width=900, height=270, labels=True):
+    if not indices:
+        return _svg_wrap("无可绘制K线", "", height)
+    subset=[(i,bars[i]) for i in indices]
+    lo=min(b[2] for _,b in subset); hi=max(b[3] for _,b in subset)
+    pad=max((hi-lo)*.12,0.001); lo-=pad; hi+=pad
+    left,right,top,bottom=58,width-18,18,height-45
+    xstep=(right-left)/max(len(subset),1)
+    y=lambda v: bottom-(v-lo)/(hi-lo)*(bottom-top)
+    out=[f'<line x1="{left}" y1="{top}" x2="{left}" y2="{bottom}" stroke="#98a2b3"/>',
+         f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="#98a2b3"/>']
+    for tick in range(5):
+        v=lo+(hi-lo)*tick/4; yy=y(v)
+        out.append(f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="#edf0f3"/>')
+        out.append(f'<text x="5" y="{yy+4:.1f}" font-size="12" fill="#667085">{v:.3f}</text>')
+    for j,(i,b) in enumerate(subset):
+        o,c,l,h=b; x=left+(j+.5)*xstep; color="#d93025" if c>=o else "#159455"
+        out.append(f'<line x1="{x:.1f}" y1="{y(h):.1f}" x2="{x:.1f}" y2="{y(l):.1f}" stroke="{color}" stroke-width="2"/>')
+        yt=min(y(o),y(c)); bh=max(abs(y(o)-y(c)),2)
+        out.append(f'<rect x="{x-xstep*.27:.1f}" y="{yt:.1f}" width="{max(xstep*.54,2):.1f}" height="{bh:.1f}" fill="{color}" stroke="{color}"/>')
+        if labels and (j%max(1,len(subset)//6)==0 or j==len(subset)-1):
+            out.append(f'<text x="{x:.1f}" y="{bottom+18}" text-anchor="middle" font-size="11" fill="#667085">{esc(dates[i][-5:])}</text>')
+    return _svg_wrap("真实K线图", "".join(out), height)
+
+
+def _single_candle_svg(bar, date):
+    o,c,l,h=bar; top=28; bottom=220; mid=460
+    lo=min(l,o,c)-max((h-l)*.35,.004); hi=max(h,o,c)+max((h-l)*.35,.004)
+    y=lambda v: bottom-(v-lo)/(hi-lo)*(bottom-top)
+    color="#d93025" if c>=o else "#159455"
+    bodytop=min(y(o),y(c)); bodyh=max(abs(y(o)-y(c)),3)
+    parts=[f'<line x1="{mid}" y1="{y(h):.1f}" x2="{mid}" y2="{y(l):.1f}" stroke="{color}" stroke-width="5"/>',
+           f'<rect x="410" y="{bodytop:.1f}" width="100" height="{bodyh:.1f}" fill="{color}" rx="2"/>']
+    # price labels and leader lines, aligned to the four actual price levels
+    labels=[("最高 H",h,70,"#344054"),("收盘 C",c,330,"#d93025" if c>=o else "#159455"),
+            ("开盘 O",o,590,"#344054"),("最低 L",l,850,"#344054")]
+    for label,v,x,col in labels:
+        yy=y(v)
+        parts.append(f'<line x1="515" y1="{yy:.1f}" x2="{x-12}" y2="{yy:.1f}" stroke="{col}" stroke-dasharray="4 3"/>')
+        parts.append(f'<text x="{x}" y="{yy-7:.1f}" font-size="16" fill="{col}" text-anchor="middle">{label} {v:.3f}</text>')
+    parts += [f'<text x="460" y="250" text-anchor="middle" font-size="14" fill="#667085">{esc(date)} · {("阳线" if c>o else "阴线" if c<o else "平盘")}</text>',
+              f'<text x="460" y="18" text-anchor="middle" font-size="13" fill="#667085">上影线 {h-max(o,c):.3f}　实体 {abs(c-o):.3f}　下影线 {min(o,c)-l:.3f}</text>']
+    return _svg_wrap("今日真实日K：四价、实体与影线逐项标注", "".join(parts), 270)
+
+
+def _volume_svg(vols, dates, n=25):
+    start=max(0,len(vols)-n); data=vols[start:]; ds=dates[start:]
+    if not data: return _svg_wrap("成交量", "")
+    mx=max(data)*1.2 or 1; left,right,top,bottom=55,920,20,210
+    step=(right-left)/len(data); out=[]
+    for j,v in enumerate(data):
+        x=left+(j+.5)*step; y=bottom-v/mx*(bottom-top)
+        out.append(f'<rect x="{x-step*.3:.1f}" y="{y:.1f}" width="{step*.6:.1f}" height="{bottom-y:.1f}" fill="#7da6d8"/>')
+        if j%5==0 or j==len(data)-1: out.append(f'<text x="{x:.1f}" y="232" text-anchor="middle" font-size="11" fill="#667085">{esc(ds[j][-5:])}</text>')
+    for p,col in [(5,"#d97706"),(20,"#159455")]:
+        ma=[sum(data[max(0,i-p+1):i+1])/len(data[max(0,i-p+1):i+1]) for i in range(len(data))]
+        pts=" ".join(f"{left+(i+.5)*step:.1f},{bottom-v/mx*(bottom-top):.1f}" for i,v in enumerate(ma))
+        out.append(f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="2"/>')
+    out.append('<text x="60" y="14" font-size="12" fill="#667085">蓝柱：真实成交量　橙线：5日均量　绿线：20日均量</text>')
+    return _svg_wrap("最近交易日成交量柱与均量线", "".join(out), 250)
+
+
+def _line_svg(values, dates, title, color="#3267a8", n=60, zero=False):
+    start=max(0,len(values)-n); vals=values[start:]; ds=dates[start:]
+    if not vals:return _svg_wrap(title,"")
+    lo=min(vals); hi=max(vals)
+    if zero: lo=min(lo,0);hi=max(hi,0)
+    if hi==lo: hi+=1
+    left,right,top,bottom=55,920,20,205
+    x=lambda i:left+(right-left)*i/max(len(vals)-1,1)
+    y=lambda v:bottom-(v-lo)/(hi-lo)*(bottom-top)
+    out=[]
+    for t in range(5):
+        v=lo+(hi-lo)*t/4; yy=y(v)
+        out.append(f'<line x1="{left}" y1="{yy:.1f}" x2="{right}" y2="{yy:.1f}" stroke="#edf0f3"/>')
+        out.append(f'<text x="4" y="{yy+4:.1f}" font-size="11" fill="#667085">{v:.3f}</text>')
+    pts=" ".join(f"{x(i):.1f},{y(v):.1f}" for i,v in enumerate(vals))
+    out.append(f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="2.5"/>')
+    out.append(f'<circle cx="{x(len(vals)-1):.1f}" cy="{y(vals[-1]):.1f}" r="4" fill="{color}"/>')
+    out.append(f'<text x="{right}" y="238" text-anchor="end" font-size="12" fill="#667085">最新 {esc(ds[-1])}：{vals[-1]:.4f}</text>')
+    return _svg_wrap(title,"".join(out),250)
+
+
+def _price_ma_svg(bars, dates, n=60):
+    start=max(0,len(bars)-n); closes=[b[1] for b in bars]
+    price=_candle_svg(bars,dates,list(range(start,len(bars))),height=280)
+    # add moving average lines as a separate synchronized panel for readability
+    out=[]
+    for p,col in [(5,"#d97706"),(20,"#159455"),(60,"#805ad5")]:
+        vals=[None if i<p-1 else sum(closes[i-p+1:i+1])/p for i in range(start,len(closes))]
+        valid=[(j,v) for j,v in enumerate(vals) if v is not None]
+        if valid: out.append(f'<text x="20" y="{20+len(out)*19}" font-size="12" fill="{col}">MA{p} 最新 {valid[-1][1]:.3f}</text>')
+    return price + _svg_wrap("均线读图提示", "".join(out), 65)
+
+
+def _period_svg(rows, title):
+    if not rows:return _svg_wrap(title,"")
+    # Render OHLC period bars as candles, with real aggregated dates/values.
+    bars=[]; dates=[]
+    for key,b in rows:
+        dates.append(b[1])
+        bars.append([b[2],b[3],b[4],b[5]])
+    return _candle_svg(bars,dates,list(range(len(bars))),height=250)
+
+
+def _macd_series(closes):
+    def ema(vals,p):
+        a=2/(p+1); out=[]
+        for i,v in enumerate(vals): out.append(v if i==0 else a*v+(1-a)*out[-1])
+        return out
+    fast,slow=ema(closes,12),ema(closes,26)
+    dif=[x-y for x,y in zip(fast,slow)]; dea=ema(dif,9)
+    return dif,dea,[(x-y)*2 for x,y in zip(dif,dea)]
+
+
+def _section(num, title, goal, concept, formula, case, steps, caution, question, answer, explanation, diagram=""):
     return f"""
 <section class="course-chapter">
  <h3>第{num}章　{esc(title)}</h3>
  <p class="course-goal"><b>本章目标：</b>{goal}</p>
- <div class="course-grid">
+ {diagram}<div class="course-grid">
   <div><h4>一、原理与概念</h4><p>{concept}</p><div class="course-formula">{formula}</div></div>
   <div><h4>二、510330真实行情案例</h4><p>{case}</p></div>
  </div>
