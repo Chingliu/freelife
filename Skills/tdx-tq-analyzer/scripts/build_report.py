@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Build a self-contained ECharts HTML report from metrics + chart JSON.
-Pure Python. The HTML loads ECharts from CDN, so internet is needed to view charts.
+Build a self-contained offline HTML report from metrics + chart JSON.
+Pure Python. Charts are rendered with inline SVG and vanilla JavaScript; no network dependency.
 
 Usage:
     python build_report.py <METRICS_JSON> <CHART_JSON> <OUTPUT_HTML>
@@ -15,7 +15,7 @@ TPL = r"""<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>__TITLE__</title>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6f8;color:#1f2329;line-height:1.6;padding:28px 16px}
@@ -181,41 +181,25 @@ function sw(id,el){
   var ts=document.querySelectorAll('.tab'); for(var i=0;i<ts.length;i++)ts[i].classList.remove('on');
   el.classList.add('on');
 }
-echarts.init(document.getElementById('chart1')).setOption({
-  tooltip:{trigger:'axis',axisPointer:{type:'cross'}},
-  legend:{data:['日K','MA5','MA20','成交量']},
-  grid:[{left:55,right:20,top:30,height:'55%'},{left:55,right:20,top:'72%',height:'18%'}],
-  xAxis:[{type:'category',data:CD.dates},{type:'category',data:CD.dates,gridIndex:1,axisLabel:{show:false}}],
-  yAxis:[{scale:true},{scale:true,gridIndex:1,splitLine:{show:false}}],
-  series:[
-    {name:'日K',type:'candlestick',data:CD.ohlc,itemStyle:{color:'#d93025',color0:'#0f9d58',borderColor:'#d93025',borderColor0:'#0f9d58'}},
-    {name:'MA5',type:'line',data:CD.ma5,smooth:true,showSymbol:false,lineStyle:{width:1,color:'#e8a33d'}},
-    {name:'MA20',type:'line',data:CD.ma20,smooth:true,showSymbol:false,lineStyle:{width:1,color:'#5b7fc7'}},
-    {name:'成交量',type:'bar',xAxisIndex:1,yAxisIndex:1,data:CD.vols,itemStyle:{color:'#93a4bd'}}
-  ]
-});
-echarts.init(document.getElementById('chart2')).setOption({
-  tooltip:{trigger:'axis'},
-  legend:{data:['成交量(亿股)','10日均量']},
-  xAxis:{type:'category',data:CD.dates},
-  yAxis:{type:'value',name:'亿股'},
-  series:[
-    {name:'成交量(亿股)',type:'bar',data:CD.vols,itemStyle:{color:'#9aa7b8'}},
-    {name:'10日均量',type:'line',data:CD.vma10,smooth:true,showSymbol:false,lineStyle:{width:2,color:'#d93025'}}
-  ]
-});
-echarts.init(document.getElementById('chart3')).setOption({
-  tooltip:{trigger:'item',formatter:'{b}: {d}%'},
-  legend:{data:['外盘(主动买入)','内盘(主动卖出)']},
-  series:[{
-    type:'pie',radius:['42%','68%'],
-    label:{formatter:'{b}\n{d}%'},
-    data:[
-      {name:'外盘(主动买入)',value:Math.round(CD.outside),itemStyle:{color:'#d93025'}},
-      {name:'内盘(主动卖出)',value:Math.round(CD.inside),itemStyle:{color:'#0f9d58'}}
-    ]
-  }]
-});
+function svgNode(id,markup){document.getElementById(id).innerHTML='<svg viewBox="0 0 1000 320" role="img" aria-label="行情分析图" style="width:100%;height:100%;font-family:Arial,sans-serif">'+markup+'</svg>';}
+function linePath(values,x0,y0,w,h,min,max){return values.map(function(v,i){var x=x0+i*w/Math.max(1,values.length-1),y=y0+h-(v-min)/(max-min||1)*h;return (i?'L':'M')+x.toFixed(1)+','+y.toFixed(1)}).join(' ');}
+(function(){
+ var n=CD.dates.length, vals=CD.ohlc.flatMap(function(x){return [x[2],x[3]]}),min=Math.min.apply(null,vals),max=Math.max.apply(null,vals),plotTop=18,plotH=185,baseY=220,step=900/Math.max(1,n);
+ var s='<line x1="45" y1="220" x2="960" y2="220" stroke="#ccd3dc"/>';
+ CD.ohlc.forEach(function(v,i){var x=50+i*step+step/2,up=v[1]>=v[0],col=up?'#d93025':'#0f9d58',yH=plotTop+(max-v[3])/(max-min||1)*plotH,yL=plotTop+(max-v[2])/(max-min||1)*plotH,yO=plotTop+(max-v[0])/(max-min||1)*plotH,yC=plotTop+(max-v[1])/(max-min||1)*plotH;s+='<line x1="'+x+'" y1="'+yH+'" x2="'+x+'" y2="'+yL+'" stroke="'+col+'"/><rect x="'+(x-step*.28)+'" y="'+Math.min(yO,yC)+'" width="'+Math.max(2,step*.56)+'" height="'+Math.max(1,Math.abs(yC-yO))+'" fill="'+col+'"/>';});
+ s+='<text x="50" y="248" fill="#667085" font-size="12">'+CD.dates[0]+'</text><text x="900" y="248" fill="#667085" font-size="12">'+CD.dates[n-1]+'</text>';
+ var vmax=Math.max.apply(null,CD.vols.concat([1]));
+ CD.vols.forEach(function(v,i){var x=50+i*step+step/2,h=v/vmax*48;s+='<rect x="'+(x-step*.28)+'" y="'+(305-h)+'" width="'+Math.max(2,step*.56)+'" height="'+h+'" fill="#9aa7b8"/>';});
+ svgNode('chart1',s);
+ var vmax2=Math.max.apply(null,CD.vols.concat([1])),bars='';
+ CD.vols.forEach(function(v,i){var x=50+i*step+step/2,h=v/vmax2*230;bars+='<rect x="'+(x-step*.3)+'" y="'+(270-h)+'" width="'+Math.max(2,step*.6)+'" height="'+h+'" fill="#9aa7b8"/>';});
+ var avg=CD.vma10.filter(function(x){return x!==null}),vmin=Math.min.apply(null,avg.concat([0])),vmax3=Math.max.apply(null,avg.concat([1]));
+ bars+='<path d="'+linePath(CD.vma10.map(function(v){return v===null?vmin:v}),50,25,900,230,vmin,vmax3)+'" fill="none" stroke="#d93025" stroke-width="3"/>';
+ svgNode('chart2',bars);
+ var total=CD.inside+CD.outside,ratio=total?CD.outside/total:0;
+ var flow='<text x="70" y="80" font-size="18" fill="#344054">外盘（主动买入）</text><rect x="70" y="100" width="850" height="42" rx="6" fill="#e7ebf0"/><rect x="70" y="100" width="'+(850*ratio)+'" height="42" rx="6" fill="#d93025"/><text x="70" y="180" font-size="18" fill="#344054">内盘（主动卖出）</text><rect x="70" y="200" width="850" height="42" rx="6" fill="#e7ebf0"/><rect x="70" y="200" width="'+(850*(1-ratio))+'" height="42" rx="6" fill="#0f9d58"/><text x="70" y="285" font-size="16" fill="#667085">外盘占比 '+(ratio*100).toFixed(1)+'% · 内盘占比 '+((1-ratio)*100).toFixed(1)+'%</text>';
+ svgNode('chart3',flow);
+})();
 </script>
 </body>
 </html>

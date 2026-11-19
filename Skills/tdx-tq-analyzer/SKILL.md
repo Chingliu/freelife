@@ -47,7 +47,14 @@ If the client is already running, this is a single-shot command. If not, start i
 - `scripts/run_analysis.py` — orchestrator: code normalization → client check → temp script placement → fetch → analyze → report. Start here.
 - `scripts/tq_fetch.py` — generic fetcher (runs from `PYPlugins\user`): snapshot, more_info, stock_info, and 3 windows × 35 daily bars.
 - `scripts/analyze.py` — pure analysis: volume MAs, volume ratio, 20-day Chaikin Money Flow, up/down-day volume, top volume days; **plus the `buycase` block** (veto-first, dimension states, evidence cap, trigger/stop/watchpoints); writes metrics + chart JSON.
-- `scripts/build_report.py` — renders the HTML report (ECharts via CDN — internet needed to view charts). Includes a dedicated **买入依据核对** card.
+- `scripts/build_report.py` — renders the investment-analysis HTML with inline SVG charts and vanilla JavaScript; no CDN/network dependency. Includes a dedicated **买入依据核对** card.
+- `scripts/learning_engine.py` — deterministic daily plan, mastery tracking and spaced review scheduler (standard library only).
+- `scripts/learning_report.py` — generates the standalone offline learning HTML with curriculum, quizzes, local progress and JSON import/export.
+- `learning/curriculum.json` — six-chapter curriculum; chapters 1–2 are MVP teaching content, chapters 3–6 are structured course outlines.
+
+## Learning system
+
+See `LEARNING-SYSTEM.md`. Generate an offline learning report with `python scripts/learning_report.py --out learning_report.html`. To include a real chart from the TQ analysis pipeline, add `--chart path/to/chart_CODE.json`. No real chart data means the page explicitly reports that no market example is loaded; it never fabricates candles.
 
 ## References
 
