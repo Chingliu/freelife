@@ -125,6 +125,13 @@ def build_course_html(chart, metrics):
                f"CMF(20)={metrics.get('moneyflow',{}).get('cmf20',0):+.3f}（量价统计指标，并非真实账户资金流）。"
                "当前报告的原始日线样本为实际采集窗口，不代表完整牛熊周期。")
     sections=[]
+    snap = metrics.get("snapshot", {})
+    live_note = ("注意：TQ 快照标记为盘中，最新日K/当周K/当月K可能尚未完成，"
+                 "不要把盘中临时形态当作收盘确认。" if snap.get("hqdate") else
+                 "数据状态：以本次TQ返回的最新日线为准；如数据源在交易时段刷新，最新周期仍可能是未完成K线。")
+    sections.append('<p class="course-caution"><b>数据时点：</b>' + esc(live_note) +
+                    ' 本次原始日线共 ' + str(len(bars)) + ' 根，覆盖 ' +
+                    esc(dates[0]) + ' 至 ' + esc(dates[-1]) + '。</p>')
     sections.append(_section(1,"K线基础","能从开、高、低、收四价读出实体、影线和当日价格行为。",
       "一根K线记录一个时间周期内的四个价格。实体表示开盘与收盘之间的距离；上影线表示最高价到实体上沿，下影线表示实体下沿到最低价。先读事实，再解释多空。",
       "实体长度=|收盘价−开盘价|；上影=最高价−max(开盘价,收盘价)；下影=min(开盘价,收盘价)−最低价。",
