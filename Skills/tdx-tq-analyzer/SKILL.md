@@ -29,7 +29,7 @@ Run the whole pipeline for one code (code auto-normalized: `510330` → `510330.
 ```
 
 It prints `REPORT_HTML=<path>`. Open that HTML with the file viewer / browser. Outputs in `--outdir`:
-- `report_<CODE>.html` — final ECharts report
+- `report_<CODE>.html` — single integrated offline report with market analysis + six teaching chapters
 - `metrics_<CODE>.json` / `chart_<CODE>.json` — analysis results
 - `raw_<CODE>.json` — full raw TQ dump
 
@@ -48,13 +48,14 @@ If the client is already running, this is a single-shot command. If not, start i
 - `scripts/tq_fetch.py` — generic fetcher (runs from `PYPlugins\user`): snapshot, more_info, stock_info, and 3 windows × 35 daily bars.
 - `scripts/analyze.py` — pure analysis: volume MAs, volume ratio, 20-day Chaikin Money Flow, up/down-day volume, top volume days; **plus the `buycase` block** (veto-first, dimension states, evidence cap, trigger/stop/watchpoints); writes metrics + chart JSON.
 - `scripts/build_report.py` — renders the investment-analysis HTML with inline SVG charts and vanilla JavaScript; no CDN/network dependency. Includes a dedicated **买入依据核对** card.
-- `scripts/learning_engine.py` — deterministic daily plan, mastery tracking and spaced review scheduler (standard library only).
-- `scripts/learning_report.py` — generates the standalone offline learning HTML with curriculum, quizzes, local progress and JSON import/export.
-- `learning/curriculum.json` — six-chapter curriculum; chapters 1–2 are MVP teaching content, chapters 3–6 are structured course outlines.
+- `scripts/course_content.py` — embeds six teaching chapters in the stock report, calculating real 510330 candle, volume, trend, multi-period and indicator examples.
+- `scripts/learning_engine.py` — optional deterministic study-plan and mastery tracker.
+- `scripts/learning_report.py` — legacy standalone progress page; not part of the normal report workflow.
+- `learning/curriculum.json` — six-chapter curriculum outline.
 
 ## Learning system
 
-See `LEARNING-SYSTEM.md`. Generate an offline learning report with `python scripts/learning_report.py --out learning_report.html`. To include a real chart from the TQ analysis pipeline, add `--chart path/to/chart_CODE.json`. No real chart data means the page explicitly reports that no market example is loaded; it never fabricates candles.
+See `LEARNING-SYSTEM.md`. The normal `run_analysis.py` workflow embeds all six chapters and real-data examples directly into `report_<CODE>.html`; do not generate a separate learning report for normal use.
 
 ## References
 
